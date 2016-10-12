@@ -1,8 +1,0 @@
-#!/bin/bash
-
-ACCT=${ACCT:-llparse}
-NAME=${NAME:-git-mirror}
-VERSION=${VERSION:-v0.1}
-
-docker build -t $ACCT/$NAME:$VERSION .
-docker push $ACCT/$NAME:$VERSION

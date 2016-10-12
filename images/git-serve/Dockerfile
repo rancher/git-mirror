@@ -1,0 +1,13 @@
+FROM ubuntu:16.04
+
+RUN \
+  apt-get update && \
+  apt-get install -y git-core nginx fcgiwrap
+
+ADD git.conf /etc/nginx/sites-available/
+RUN \
+  rm -rf /etc/nginx/sites-enabled/* && \
+  ln -fs /etc/nginx/sites-available/git.conf /etc/nginx/sites-enabled/git.conf
+
+ADD entrypoint /
+ENTRYPOINT ["/entrypoint"]

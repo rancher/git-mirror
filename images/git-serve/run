@@ -1,0 +1,10 @@
+#!/bin/bash
+
+docker run \
+  -d \
+  -p 80:80 \
+  -v git-mirror:/var/git \
+  --restart=always \
+  --name git-serve \
+  llparse/git-serve
+

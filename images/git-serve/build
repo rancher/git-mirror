@@ -1,0 +1,9 @@
+#!/bin/bash
+
+ACCT=${ACCT:-llparse}
+VERSION=${VERSION:-latest}
+
+NAME=git-serve
+
+docker build -t $ACCT/$NAME:$VERSION .
+#docker push $ACCT/$NAME:$VERSION
