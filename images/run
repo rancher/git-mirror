@@ -1,0 +1,17 @@
+#!/bin/bash
+
+docker run \
+  -d \
+  -p 4141:4141 \
+  -v git-mirror:/var/git \
+  --restart=always \
+  --name git-mirror \
+    llparse/git-mirror
+
+docker run \
+  -d \
+  -p 80:80 \
+  -v git-mirror:/var/git \
+  --restart=always \
+  --name git-serve \
+  llparse/git-serve

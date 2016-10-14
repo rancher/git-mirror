@@ -1,134 +1,112 @@
 package main
 
-var jsonPush = []byte(`{
-  "ref": "refs/heads/changes",
-  "before": "9049f1265b7d61be4a8904a9a27120d2064dab3b",
-  "after": "0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
-  "created": false,
+import (
+  "encoding/json"
+)
+
+var exampleJsonPush = []byte(`{
+  "ref": "refs/heads/test",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "7abc80b1847e64af2658317ef3307875e4ca8b84",
+  "created": true,
   "deleted": false,
   "forced": false,
-  "base_ref": null,
-  "compare": "https://github.com/baxterthehacker/public-repo/compare/9049f1265b7d...0d1a26e67d8f",
-  "commits": [
-    {
-      "id": "0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
-      "tree_id": "f9d2a07e9488b91af2641b26b9407fe22a451433",
-      "distinct": true,
-      "message": "Update README.md",
-      "timestamp": "2015-05-05T19:40:15-04:00",
-      "url": "https://github.com/baxterthehacker/public-repo/commit/0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
-      "author": {
-        "name": "baxterthehacker",
-        "email": "baxterthehacker@users.noreply.github.com",
-        "username": "baxterthehacker"
-      },
-      "committer": {
-        "name": "baxterthehacker",
-        "email": "baxterthehacker@users.noreply.github.com",
-        "username": "baxterthehacker"
-      },
-      "added": [
-
-      ],
-      "removed": [
-
-      ],
-      "modified": [
-        "README.md"
-      ]
-    }
-  ],
+  "base_ref": "refs/heads/master",
+  "compare": "https://github.com/LLParse/rancher-catalog/compare/test",
+  "commits": [],
   "head_commit": {
-    "id": "0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
-    "tree_id": "f9d2a07e9488b91af2641b26b9407fe22a451433",
+    "id": "7abc80b1847e64af2658317ef3307875e4ca8b84",
+    "tree_id": "83647aba0849f06c02451cd5f66cc07aae8c9fa9",
     "distinct": true,
-    "message": "Update README.md",
-    "timestamp": "2015-05-05T19:40:15-04:00",
-    "url": "https://github.com/baxterthehacker/public-repo/commit/0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
+    "message": "Merge pull request #197 from alena1108/114\n\nkubernetes-agent/ingress-controller/kubernetes images update for k8s 1.2.4",
+    "timestamp": "2016-09-23T15:55:46-07:00",
+    "url": "https://github.com/LLParse/rancher-catalog/commit/7abc80b1847e64af2658317ef3307875e4ca8b84",
     "author": {
-      "name": "baxterthehacker",
-      "email": "baxterthehacker@users.noreply.github.com",
-      "username": "baxterthehacker"
+      "name": "Denise",
+      "email": "denise@rancher.com",
+      "username": "deniseschannon"
     },
     "committer": {
-      "name": "baxterthehacker",
-      "email": "baxterthehacker@users.noreply.github.com",
-      "username": "baxterthehacker"
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "username": "web-flow"
     },
     "added": [
-
+      "templates/k8s/11/docker-compose.yml",
+      "templates/k8s/11/rancher-compose.yml",
+      "templates/kubernetes/11/docker-compose.yml",
+      "templates/kubernetes/11/rancher-compose.yml"
     ],
-    "removed": [
-
-    ],
+    "removed": [],
     "modified": [
-      "README.md"
+      "templates/kubernetes/config.yml"
     ]
   },
   "repository": {
-    "id": 35129377,
-    "name": "public-repo",
-    "full_name": "baxterthehacker/public-repo",
+    "id": 54731015,
+    "name": "rancher-catalog",
+    "full_name": "LLParse/rancher-catalog",
     "owner": {
-      "name": "baxterthehacker",
-      "email": "baxterthehacker@users.noreply.github.com"
+      "name": "LLParse",
+      "email": "joliver@rancher.com"
     },
     "private": false,
-    "html_url": "https://github.com/baxterthehacker/public-repo",
-    "description": "",
-    "fork": false,
-    "url": "https://github.com/baxterthehacker/public-repo",
-    "forks_url": "https://api.github.com/repos/baxterthehacker/public-repo/forks",
-    "keys_url": "https://api.github.com/repos/baxterthehacker/public-repo/keys{/key_id}",
-    "collaborators_url": "https://api.github.com/repos/baxterthehacker/public-repo/collaborators{/collaborator}",
-    "teams_url": "https://api.github.com/repos/baxterthehacker/public-repo/teams",
-    "hooks_url": "https://api.github.com/repos/baxterthehacker/public-repo/hooks",
-    "issue_events_url": "https://api.github.com/repos/baxterthehacker/public-repo/issues/events{/number}",
-    "events_url": "https://api.github.com/repos/baxterthehacker/public-repo/events",
-    "assignees_url": "https://api.github.com/repos/baxterthehacker/public-repo/assignees{/user}",
-    "branches_url": "https://api.github.com/repos/baxterthehacker/public-repo/branches{/branch}",
-    "tags_url": "https://api.github.com/repos/baxterthehacker/public-repo/tags",
-    "blobs_url": "https://api.github.com/repos/baxterthehacker/public-repo/git/blobs{/sha}",
-    "git_tags_url": "https://api.github.com/repos/baxterthehacker/public-repo/git/tags{/sha}",
-    "git_refs_url": "https://api.github.com/repos/baxterthehacker/public-repo/git/refs{/sha}",
-    "trees_url": "https://api.github.com/repos/baxterthehacker/public-repo/git/trees{/sha}",
-    "statuses_url": "https://api.github.com/repos/baxterthehacker/public-repo/statuses/{sha}",
-    "languages_url": "https://api.github.com/repos/baxterthehacker/public-repo/languages",
-    "stargazers_url": "https://api.github.com/repos/baxterthehacker/public-repo/stargazers",
-    "contributors_url": "https://api.github.com/repos/baxterthehacker/public-repo/contributors",
-    "subscribers_url": "https://api.github.com/repos/baxterthehacker/public-repo/subscribers",
-    "subscription_url": "https://api.github.com/repos/baxterthehacker/public-repo/subscription",
-    "commits_url": "https://api.github.com/repos/baxterthehacker/public-repo/commits{/sha}",
-    "git_commits_url": "https://api.github.com/repos/baxterthehacker/public-repo/git/commits{/sha}",
-    "comments_url": "https://api.github.com/repos/baxterthehacker/public-repo/comments{/number}",
-    "issue_comment_url": "https://api.github.com/repos/baxterthehacker/public-repo/issues/comments{/number}",
-    "contents_url": "https://api.github.com/repos/baxterthehacker/public-repo/contents/{+path}",
-    "compare_url": "https://api.github.com/repos/baxterthehacker/public-repo/compare/{base}...{head}",
-    "merges_url": "https://api.github.com/repos/baxterthehacker/public-repo/merges",
-    "archive_url": "https://api.github.com/repos/baxterthehacker/public-repo/{archive_format}{/ref}",
-    "downloads_url": "https://api.github.com/repos/baxterthehacker/public-repo/downloads",
-    "issues_url": "https://api.github.com/repos/baxterthehacker/public-repo/issues{/number}",
-    "pulls_url": "https://api.github.com/repos/baxterthehacker/public-repo/pulls{/number}",
-    "milestones_url": "https://api.github.com/repos/baxterthehacker/public-repo/milestones{/number}",
-    "notifications_url": "https://api.github.com/repos/baxterthehacker/public-repo/notifications{?since,all,participating}",
-    "labels_url": "https://api.github.com/repos/baxterthehacker/public-repo/labels{/name}",
-    "releases_url": "https://api.github.com/repos/baxterthehacker/public-repo/releases{/id}",
-    "created_at": 1430869212,
-    "updated_at": "2015-05-05T23:40:12Z",
-    "pushed_at": 1430869217,
-    "git_url": "git://github.com/baxterthehacker/public-repo.git",
-    "ssh_url": "git@github.com:baxterthehacker/public-repo.git",
-    "clone_url": "https://github.com/baxterthehacker/public-repo.git",
-    "svn_url": "https://github.com/baxterthehacker/public-repo",
+    "html_url": "https://github.com/LLParse/rancher-catalog",
+    "description": null,
+    "fork": true,
+    "url": "https://github.com/LLParse/rancher-catalog",
+    "forks_url": "https://api.github.com/repos/LLParse/rancher-catalog/forks",
+    "keys_url": "https://api.github.com/repos/LLParse/rancher-catalog/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/LLParse/rancher-catalog/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/LLParse/rancher-catalog/teams",
+    "hooks_url": "https://api.github.com/repos/LLParse/rancher-catalog/hooks",
+    "issue_events_url": "https://api.github.com/repos/LLParse/rancher-catalog/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/LLParse/rancher-catalog/events",
+    "assignees_url": "https://api.github.com/repos/LLParse/rancher-catalog/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/LLParse/rancher-catalog/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/LLParse/rancher-catalog/tags",
+    "blobs_url": "https://api.github.com/repos/LLParse/rancher-catalog/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/LLParse/rancher-catalog/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/LLParse/rancher-catalog/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/LLParse/rancher-catalog/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/LLParse/rancher-catalog/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/LLParse/rancher-catalog/languages",
+    "stargazers_url": "https://api.github.com/repos/LLParse/rancher-catalog/stargazers",
+    "contributors_url": "https://api.github.com/repos/LLParse/rancher-catalog/contributors",
+    "subscribers_url": "https://api.github.com/repos/LLParse/rancher-catalog/subscribers",
+    "subscription_url": "https://api.github.com/repos/LLParse/rancher-catalog/subscription",
+    "commits_url": "https://api.github.com/repos/LLParse/rancher-catalog/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/LLParse/rancher-catalog/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/LLParse/rancher-catalog/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/LLParse/rancher-catalog/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/LLParse/rancher-catalog/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/LLParse/rancher-catalog/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/LLParse/rancher-catalog/merges",
+    "archive_url": "https://api.github.com/repos/LLParse/rancher-catalog/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/LLParse/rancher-catalog/downloads",
+    "issues_url": "https://api.github.com/repos/LLParse/rancher-catalog/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/LLParse/rancher-catalog/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/LLParse/rancher-catalog/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/LLParse/rancher-catalog/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/LLParse/rancher-catalog/labels{/name}",
+    "releases_url": "https://api.github.com/repos/LLParse/rancher-catalog/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/LLParse/rancher-catalog/deployments",
+    "created_at": 1458923046,
+    "updated_at": "2016-03-25T16:24:07Z",
+    "pushed_at": 1476410867,
+    "git_url": "git://github.com/LLParse/rancher-catalog.git",
+    "ssh_url": "git@github.com:LLParse/rancher-catalog.git",
+    "clone_url": "https://github.com/LLParse/rancher-catalog.git",
+    "svn_url": "https://github.com/LLParse/rancher-catalog",
     "homepage": null,
-    "size": 0,
+    "size": 435,
     "stargazers_count": 0,
     "watchers_count": 0,
-    "language": null,
-    "has_issues": true,
+    "language": "Python",
+    "has_issues": false,
     "has_downloads": true,
     "has_wiki": true,
-    "has_pages": true,
+    "has_pages": false,
     "forks_count": 0,
     "mirror_url": null,
     "open_issues_count": 0,
@@ -140,32 +118,31 @@ var jsonPush = []byte(`{
     "master_branch": "master"
   },
   "pusher": {
-    "name": "baxterthehacker",
-    "email": "baxterthehacker@users.noreply.github.com"
+    "name": "LLParse",
+    "email": "joliver@rancher.com"
   },
   "sender": {
-    "login": "baxterthehacker",
-    "id": 6752317,
-    "avatar_url": "https://avatars.githubusercontent.com/u/6752317?v=3",
+    "login": "LLParse",
+    "id": 6145659,
+    "avatar_url": "https://avatars.githubusercontent.com/u/6145659?v=3",
     "gravatar_id": "",
-    "url": "https://api.github.com/users/baxterthehacker",
-    "html_url": "https://github.com/baxterthehacker",
-    "followers_url": "https://api.github.com/users/baxterthehacker/followers",
-    "following_url": "https://api.github.com/users/baxterthehacker/following{/other_user}",
-    "gists_url": "https://api.github.com/users/baxterthehacker/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/baxterthehacker/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/baxterthehacker/subscriptions",
-    "organizations_url": "https://api.github.com/users/baxterthehacker/orgs",
-    "repos_url": "https://api.github.com/users/baxterthehacker/repos",
-    "events_url": "https://api.github.com/users/baxterthehacker/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/baxterthehacker/received_events",
+    "url": "https://api.github.com/users/LLParse",
+    "html_url": "https://github.com/LLParse",
+    "followers_url": "https://api.github.com/users/LLParse/followers",
+    "following_url": "https://api.github.com/users/LLParse/following{/other_user}",
+    "gists_url": "https://api.github.com/users/LLParse/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/LLParse/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/LLParse/subscriptions",
+    "organizations_url": "https://api.github.com/users/LLParse/orgs",
+    "repos_url": "https://api.github.com/users/LLParse/repos",
+    "events_url": "https://api.github.com/users/LLParse/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/LLParse/received_events",
     "type": "User",
     "site_admin": false
-  }
-}`)
+  }`)
 
 type GHPushEvent struct {
-  Repository *GHRepository
+  Repo *GHRepository `json:"repository"`
 }
 
 type GHRepository struct {
@@ -174,4 +151,8 @@ type GHRepository struct {
   FullName string `json:"full_name"`
 }
 
-
+func ParsePushEvent(data []byte) (*GHPushEvent, error) {
+  event := GHPushEvent{}
+  err := json.Unmarshal(data, &event)
+  return &event, err
+}

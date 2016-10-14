@@ -45,18 +45,18 @@ func (r *Repository) Mirror() {
   log.WithFields(log.Fields{"Repo": r.name}).Info("Cloned")
 }
 
-func (r *Repository) Fetch() {
+func (r *Repository) Fetch(reason string) {
   r.Lock()
   defer r.Unlock()
 
-  log.WithFields(log.Fields{"Repo": r.name}).Info("Fetching")
+  log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Info("Fetching")
   cmd := exec.Command("git", "-C", r.targetDir, "fetch", "-p", "origin")
 
   if err := cmd.Run(); err != nil {
     log.Fatal("Error fetching origin: " + err.Error())
   }
 
-  log.WithFields(log.Fields{"Repo": r.name}).Info("Fetched")
+  log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Info("Fetched")
 }
 
 func pathExists(path string) bool {
@@ -70,9 +70,6 @@ func pathExists(path string) bool {
 func (r *Repository) nameFromUrl() string {
   parts := strings.Split(r.url, "/")
   name := parts[len(parts)-1]
-  if !strings.HasSuffix(name, ".git") {
-    name += ".git"
-  }
-  return name
+  return strings.TrimSuffix(name, ".git")
 }
 
