@@ -2,7 +2,7 @@ variable "region" {
   default = "sa-east-1"
 }
 
-variable "key_name" {
+variable "aws_key_name" {
   default = "git"
 }
 
@@ -18,8 +18,8 @@ variable "region_count" {
     eu-central-1   = 2
     ap-northeast-1 = 2
     ap-northeast-2 = 2
-    ap-southeast-1 = 2
-    ap-southeast-2 = 3
+    ap-southeast-1 = 0
+    ap-southeast-2 = 0
     ap-south-1     = 2
     sa-east-1      = 2
   }
@@ -60,18 +60,18 @@ variable "zones" {
 
 variable "region_ami" {
   default = {
-    us-east-1      = "ami-ee6f3ef9"
-    us-east-2      = "ami-d5045eb0"
-    us-west-1      = "ami-43db9323"
-    us-west-2      = "ami-6e67c20e"
-    eu-west-1      = "ami-6f6c231c"
-    eu-central-1   = "ami-a2e51ccd"
-    ap-northeast-1 = "ami-6462c505"
-    ap-northeast-2 = "ami-5df32733"
-    ap-southeast-1 = "ami-cc6fc9af"
-    ap-southeast-2 = "ami-d67845b5"
-    ap-south-1     = "ami-1560147a"
-    sa-east-1      = "ami-2173ee4d"
+    us-east-1      = "ami-dc5303cb"
+    us-east-2      = "ami-c2075da7"
+    us-west-1      = "ami-1de4ac7d"
+    us-west-2      = "ami-f858fd98"
+    eu-west-1      = "ami-e3ca8590"
+    eu-central-1   = "ami-ba39c0d5"
+    ap-northeast-1 = "ami-ec3f988d"
+    ap-northeast-2 = "ami-c7f82ca9"
+    ap-southeast-1 = "ami-6c45e30f"
+    ap-southeast-2 = "ami-c3635ea0"
+    ap-south-1     = "ami-d86d19b7"
+    sa-east-1      = "ami-ae61fcc2"
   }
 }
 
@@ -90,10 +90,10 @@ provider "aws" {
 }
 
 resource "aws_launch_configuration" "git_mirror" {
-  name          = "git-mirror-lc"
+  #name          = "git-mirror-lc"
   image_id      = "${lookup(var.region_ami, var.region)}"
   instance_type = "${var.instance_type}"
-  key_name      = "${var.key_name}"
+  key_name      = "${var.aws_key_name}"
   root_block_device {
     volume_type           = "gp2"
     volume_size           = 20
@@ -104,7 +104,11 @@ resource "aws_launch_configuration" "git_mirror" {
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 sleep 30
 sudo aws-ec2-assign-elastic-ip --region ${var.region} --access-key ${var.aws_access_key} --secret-key ${var.aws_secret_key} --valid-ips ${join(",", aws_eip.git_mirror.*.public_ip)}
-sleep 15
+while [ \"$?\" != 0 ]; do
+  sleep 1
+  sudo aws-ec2-assign-elastic-ip --region ${var.region} --access-key ${var.aws_access_key} --secret-key ${var.aws_secret_key} --valid-ips ${join(",", aws_eip.git_mirror.*.public_ip)}
+done
+sleep 10
 sudo docker run -d -v git-mirror:/var/git --net=host --restart=always --name=git-mirror llparse/git-mirror
 sudo docker run -d -v git-mirror:/var/git --net=host --restart=always --name=git-serve -v /var/log/nginx:/var/log/nginx llparse/git-serve"
 }
