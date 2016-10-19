@@ -1,17 +1,20 @@
 #!/bin/bash
 
+docker pull llparse/git-mirror
 docker run \
   -d \
-  -p 4141:4141 \
   -v git-mirror:/var/git \
+  --net=host \
   --restart=always \
-  --name git-mirror \
+  --name=git-mirror \
     llparse/git-mirror
 
+docker pull llparse/git-serve
 docker run \
   -d \
-  -p 80:80 \
   -v git-mirror:/var/git \
+  -v /var/log/nginx:/var/log/nginx \
+  --net=host \
   --restart=always \
-  --name git-serve \
-  llparse/git-serve
+  --name=git-serve \
+    llparse/git-serve

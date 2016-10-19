@@ -41,8 +41,6 @@ func main() {
 
   go client.poll()
 
-  // TODO: fetch mirror of each repo idempotently
-  // git clone --mirror https://github.com/llparse/infra-catalog
   http.Handle("/postreceive", client)
   log.Fatal(http.ListenAndServe(":4141", nil))
 }

@@ -1,10 +1,12 @@
 #!/bin/bash
 
+docker pull llparse/git-serve
 docker run \
   -d \
-  -p 80:80 \
   -v git-mirror:/var/git \
+  -v /var/log/nginx/${host}:/var/log/nginx \
+  --net=host \
   --restart=always \
-  --name git-serve \
-  llparse/git-serve
+  --name=git-serve \
+    llparse/git-serve
 

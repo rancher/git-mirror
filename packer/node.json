@@ -14,7 +14,18 @@
       "source_ami": "ami-2d39803a",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
+    },
+    {
+      "type": "amazon-ebs",
+      "name": "us-east-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-east-2",
+      "source_ami": "ami-4fecb72a",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -25,7 +36,7 @@
       "source_ami": "ami-48db9d28",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -36,7 +47,7 @@
       "source_ami": "ami-d732f0b7",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -47,7 +58,7 @@
       "source_ami": "ami-ed82e39e",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -58,7 +69,7 @@
       "source_ami": "ami-26c43149",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -69,7 +80,7 @@
       "source_ami": "ami-a21529cc",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -80,7 +91,7 @@
       "source_ami": "ami-09dc1267",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -91,7 +102,7 @@
       "source_ami": "ami-21d30f42",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -102,7 +113,18 @@
       "source_ami": "ami-ba3e14d9",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
+    },
+    {
+      "type": "amazon-ebs",
+      "name": "ap-south-1",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "ap-south-1",
+      "source_ami": "ami-4a90fa25",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "git-mirror_hvm"
     },
     {
       "type": "amazon-ebs",
@@ -113,7 +135,7 @@
       "source_ami": "ami-dc48dcb0",
       "instance_type": "t2.micro",
       "ssh_username": "ubuntu",
-      "ami_name": "ubuntu-14.04-hvm_docker-{{user `version`}}"
+      "ami_name": "git-mirror_hvm"
     }
   ],
   "provisioners": [
@@ -121,6 +143,10 @@
       "type": "shell",
       "script": "{{user `version`}}.sh",
       "pause_before": "30s"
+    },
+    {
+      "type": "shell",
+      "script": "aws-deps.sh"
     }
   ]
 }
