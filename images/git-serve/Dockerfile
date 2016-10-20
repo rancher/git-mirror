@@ -8,6 +8,7 @@ ADD git.conf /etc/nginx/sites-available/
 RUN \
   rm -rf /etc/nginx/sites-enabled/* && \
   ln -fs /etc/nginx/sites-available/git.conf /etc/nginx/sites-enabled/git.conf
+ADD nginx.conf /etc/nginx/
 
 ADD entrypoint /
 ENTRYPOINT ["/entrypoint"]

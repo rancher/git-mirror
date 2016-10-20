@@ -12,7 +12,7 @@ APP_PATH="github.com/llparse/git-mirror"
 
 docker run \
   --rm \
-  -v ${PWD}:/usr/src/${APP_PATH} \
+  -v ${PWD}/code:/usr/src/${APP_PATH} \
   -w /usr/src/${APP_PATH} \
     git-mirror-golang \
       go build
@@ -20,4 +20,4 @@ docker run \
 docker build -t $ACCT/git-mirror:$VERSION .
 docker push $ACCT/git-mirror:$VERSION
 
-rm git-mirror
+rm -f code/git-mirror
