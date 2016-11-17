@@ -71,17 +71,19 @@ func (c *Client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   event, err := ParsePushEvent(data)
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
-    fmt.Fprintf(w, err.Error())
     log.Error(err)
-    return
+    fmt.Fprintf(w, err.Error())
+  } else if event.Repo == nil || event.Repo.Name == "" {
+    w.WriteHeader(http.StatusNotFound)
+    fmt.Fprintf(w, "Not found")
+  } else {
+    // TODO: send message to all mirror hosts (LB will only tell 1 host about event)
+    repo, err := c.GetRepoByName(event.Repo.Name)
+    if err != nil {
+      log.WithFields(log.Fields{"Reason": "event", "Repo": event.Repo.Name}).Error(err)
+      return
+    }
+    go repo.Fetch("event")
+    fmt.Fprintf(w, "OK")
   }
-  fmt.Fprintf(w, "OK")
-
-  // TODO: send message to all mirror hosts (LB will only tell 1 host about event)
-  repo, err := c.GetRepoByName(event.Repo.Name)
-  if err != nil {
-    log.WithFields(log.Fields{"Reason": "event", "Repo": event.Repo.Name}).Error(err)
-    return
-  }
-  go repo.Fetch("event")
 }

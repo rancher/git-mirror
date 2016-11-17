@@ -3,4 +3,4 @@
 echo OK > /var/git/index.html
 service fcgiwrap start
 service nginx start
-sleep 1000000
+tail -f /var/log/nginx/error.log

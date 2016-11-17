@@ -103,6 +103,9 @@ resource "aws_launch_configuration" "git_mirror" {
   user_data       = "#!/bin/bash -ex
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 sleep 30
+sudo apt-get install -y nfs-common
+sudo mkdir -p /var/log/nginx
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).fs-e9837840.efs.us-west-2.amazonaws.com:/ /var/log/nginx
 sudo aws-ec2-assign-elastic-ip --region ${var.region} --access-key ${var.aws_access_key} --secret-key ${var.aws_secret_key} --valid-ips ${join(",", aws_eip.git_mirror.*.public_ip)}
 while [ \"$?\" != 0 ]; do
   sleep 1
@@ -110,7 +113,7 @@ while [ \"$?\" != 0 ]; do
 done
 sleep 10
 sudo docker run -d -v git-mirror:/var/git --net=host --restart=always --name=git-mirror llparse/git-mirror
-sudo docker run -d -v git-mirror:/var/git --net=host --restart=always --name=git-serve -v /var/log/nginx:/var/log/nginx llparse/git-serve"
+sudo docker run -d -v git-mirror:/var/git --net=host --restart=always --name=git-serve -v /var/log/nginx/$(hostname)_$(date +%Y-%m-%d):/var/log/nginx llparse/git-serve"
 }
 
 resource "aws_autoscaling_group" "git_mirror" {
