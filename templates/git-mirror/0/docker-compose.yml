@@ -15,4 +15,4 @@ serve:
   net: container:mirror
   volumes:
   - git-mirror:/var/git
-  - /var/log/nginx:/var/log/nginx
+  - ${HOST_LOG_PATH}:/var/log/nginx
