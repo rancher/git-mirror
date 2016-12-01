@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ACCT=${ACCT:-llparse}
-VERSION=${VERSION:-latest}
+VERSION=${VERSION:-0.2}
 
 NAME=git-serve
 

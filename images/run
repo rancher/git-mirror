@@ -1,15 +1,15 @@
 #!/bin/bash
 
-docker pull llparse/git-mirror
+docker volume rm git-mirror || true
+
 docker run \
   -d \
   -v git-mirror:/var/git \
   --net=host \
   --restart=always \
   --name=git-mirror \
-    llparse/git-mirror
+    llparse/git-mirror:0.1
 
-docker pull llparse/git-serve
 docker run \
   -d \
   -v git-mirror:/var/git \
@@ -17,4 +17,4 @@ docker run \
   --net=host \
   --restart=always \
   --name=git-serve \
-    llparse/git-serve
+    llparse/git-serve:0.2
