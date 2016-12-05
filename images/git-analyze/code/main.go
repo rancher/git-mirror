@@ -35,6 +35,12 @@ func main() {
   if err != nil {
     log.Fatal(err)
   }
+  // GET /rancher-catalog.git/info/refs?service=git-upload-pack HTTP/1.1
+  uploadpack, err := regexp.Compile("^GET /(rancher|community)-catalog(.git)?/info/refs\\?service=git-upload-pack")
+  if err != nil {
+    log.Fatal(err)
+  }
+
 
   stats := NewStats()
   stats.StartLogging()
@@ -67,42 +73,47 @@ func main() {
       break
     }
 
-    ParseLine:
-    for i, submatch := range logline.FindStringSubmatch(string(line)) {
-      switch i {
-      case 0:
+    submatches := logline.FindStringSubmatch(string(line))
+    stats.linesParsed++
+
+    if len(submatches) != 12 {
+      log.Warn(string(line))
+      continue
+    }
+
+    // ensure the log line is in the requested period
+    if !cutoffTime.IsZero() {
+      logTime, err := time.Parse("2/Jan/2006:15:04:05 -0700", submatches[1])
+      if err != nil {
+        log.Warn(err)
+      } else if logTime.Before(cutoffTime) {
+        stats.linesSkipped++
         continue
-      case 1:
-        if !cutoffTime.IsZero() {
-          logTime, err := time.Parse("2/Jan/2006:15:04:05 -0700", submatch)
-          if err != nil {
-            log.Warn(err)
-          } else if logTime.Before(cutoffTime) {
-            stats.linesSkipped++
-            break ParseLine
-          }
-        }
-      case 4:
-        ip := submatch
-        // TODO: fetch from storage
-        if _, ok := stats.ipRequests[ip]; !ok {
-          if w := stats.FindWhoisRecord(ip); w == nil {
-            wg.Add(1)
-            go func() {
-              w, err := whois(ip, &wg)
-              stats.whoisRequests++
-              if err == nil {
-                stats.AddWhoisRecord(w)
-              }
-            }()
-            time.Sleep(WhoisRequestPeriod)
-          }
-        }
-        stats.ipRequests[submatch] += 1
-      default:
       }
     }
-    stats.linesParsed++
+
+    // ensure the request is a catalog git-upload-pack
+    if !uploadpack.MatchString(submatches[5]) {
+      stats.linesSkipped++
+      continue
+    }
+
+    // do a whois lookup
+    ip := submatches[4]
+    if _, ok := stats.ipRequests[ip]; !ok {
+      if w := stats.FindWhoisRecord(ip); w == nil {
+        wg.Add(1)
+        go func() {
+          w, err := whois(ip, &wg)
+          stats.whoisRequests++
+          if err == nil {
+            stats.AddWhoisRecord(w)
+          }
+        }()
+        time.Sleep(WhoisRequestPeriod)
+      }
+    }
+    stats.ipRequests[ip]++
   }
   wg.Wait()
   stats.SaveWhoisRecords()
