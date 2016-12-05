@@ -3,9 +3,10 @@ package main
 
 import (
   "encoding/json"
+  "errors"
   "fmt"
-  "net/http"
   "io/ioutil"
+  "net/http"
   "sync"
 
   log "github.com/Sirupsen/logrus"
@@ -14,6 +15,10 @@ import (
 type ReturnJSON struct {
   WhoisRecord   *Whois         `json:"whoIsRecord"`
   ContactRecord *ContactRecord `json:"ContactRecord,omitempty"`
+}
+
+type WhoisList struct {
+  WhoisRecords []*Whois  `json:"records"`
 }
 
 type Whois struct {
@@ -43,14 +48,13 @@ type ContactRecord struct {
   Reference     string   `json:"reference"`
 }
 
-func whois(ip string, wg *sync.WaitGroup) *Whois {
+func whois(ip string, wg *sync.WaitGroup) (*Whois, error) {
   defer wg.Done()
-  //log.Info("WHOIS " + ip)
 
   url := fmt.Sprintf("https://whois.arin.net/rest/ip/%s", ip)
   req, err := http.NewRequest("GET", url, nil)
   if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
   req.Header.Add("Accept", "application/json")
   
@@ -58,11 +62,12 @@ func whois(ip string, wg *sync.WaitGroup) *Whois {
   var resp *http.Response
   resp, err = client.Do(req)
   if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
 
   if resp.StatusCode != 200 {
-    log.Warnf("whois: %v", resp)
+    log.Warnf("ip: %s whois: %v", ip, resp)
+    return nil, errors.New(fmt.Sprintf("response code: %d", resp.StatusCode))
   }
 
   data, err := ioutil.ReadAll(resp.Body)
@@ -70,8 +75,7 @@ func whois(ip string, wg *sync.WaitGroup) *Whois {
     log.Fatal(err)
   }
 
-  whois, _ := unmarshalResponse(data)
-  return whois
+  return unmarshalResponse(data)
   //contactRecord, _ := getContactRecord(whois.ContactRef["url"], data)
   //jsonOutput, _ := whois.generateJson(whois, contactRecord)
   //log.Info(string(jsonOutput))

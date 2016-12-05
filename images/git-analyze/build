@@ -3,7 +3,7 @@
 ACCT=${ACCT:-llparse}
 
 NAME=git-analyze
-VERSION=0.1
+VERSION=0.2
 
 APP_PATH=github.com/$ACCT/$NAME
 
