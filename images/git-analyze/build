@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+ACCT=${ACCT:-llparse}
+
+NAME=git-analyze
+VERSION=0.1
+
+APP_PATH=github.com/$ACCT/$NAME
+
+docker build -t $NAME-golang -f Dockerfile.build .
+
+docker run \
+  --rm \
+  -v ${PWD}/code:/usr/src/${APP_PATH} \
+  -w /usr/src/${APP_PATH} \
+    $NAME-golang \
+      go build
+
+docker build -t $ACCT/$NAME:$VERSION .
+docker push $ACCT/$NAME:$VERSION
+
+rm -f code/$NAME
