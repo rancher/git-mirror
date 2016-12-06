@@ -3,6 +3,7 @@ package main
 import (
   "encoding/json"
   "io/ioutil"
+  "math"
   "net"
   "time"
 
@@ -15,17 +16,18 @@ const (
 )
 
 type Stats struct {
-  ipRequests    map[string]int
+  ipRequests    map[string][]time.Time
+  whoisRecords  []*Whois
   linesParsed   int
   linesSkipped  int
   whoisRequests int
-  whoisRecords  []*Whois
+  totalInstalls int
   t             *time.Ticker
 }
 
 func NewStats() *Stats {
   return &Stats{
-    ipRequests: make(map[string]int),
+    ipRequests: make(map[string][]time.Time),
     whoisRecords: LoadWhoisRecords(),
   }
 }
@@ -79,22 +81,68 @@ func (s *Stats) StartLogging() {
   s.t = time.NewTicker(StatsLogPeriod)
   go func() {
     for _ = range s.t.C {
-      s.Log()
+      s.LogProgress()
     }
   }()
 }
 
 func (s *Stats) StopLogging() {
   s.t.Stop()
-  s.Log()
 }
 
-func (s *Stats) Log() {
+func (s *Stats) LogProgress() {
   log.WithFields(log.Fields{
     "lines_parsed": s.linesParsed,
     "lines_skipped": s.linesSkipped,
-    "lines_analyzed": s.linesParsed - s.linesSkipped,
-    "whois_req": s.whoisRequests,
+    "whois_requests": s.whoisRequests,
     "unique_ip": len(s.ipRequests),
-  }).Info("stats")
+  }).Info("progress")
+}
+
+func (s *Stats) LogResult() {
+  s.calculateResult()
+  log.WithFields(log.Fields{
+    "lines_analyzed": s.linesParsed - s.linesSkipped,
+    "total_installs": s.totalInstalls,
+    "unique_ip": len(s.ipRequests),
+  }).Info("result")
+}
+
+func (s *Stats) calculateResult() {
+  for _, requestTimes := range s.ipRequests {
+    // assume 1 install if we only have 1 sample point
+    if len(requestTimes) <= 1{
+      s.totalInstalls += 1
+      continue
+    }
+
+    // calculate window of time in which we received requests
+    earliest := time.Now()
+    var latest time.Time
+    for _, requestTime := range requestTimes {
+      if requestTime.Before(earliest) {
+        earliest = requestTime
+      }
+      if requestTime.After(latest) {
+        latest = requestTime
+      }
+    }
+    window := latest.Sub(earliest)
+
+    theoreticalTicks := round(window.Minutes() / 5.0)
+    if theoreticalTicks == 0 {
+      s.totalInstalls += 1    
+    } else {
+      requestPerTick := float64(len(requestTimes) - 1) / theoreticalTicks
+      if requestPerTick < 0 {
+        log.Warnf("%d %f %v", requestPerTick, theoreticalTicks, window)
+        continue
+      }
+      s.totalInstalls += int(round(requestPerTick))
+    }
+  }
+}
+
+func round(value float64) float64 {
+  return math.Floor(value + .5)
 }

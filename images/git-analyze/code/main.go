@@ -36,7 +36,7 @@ func main() {
     log.Fatal(err)
   }
   // GET /rancher-catalog.git/info/refs?service=git-upload-pack HTTP/1.1
-  uploadpack, err := regexp.Compile("^GET /(rancher|community)-catalog(.git)?/info/refs\\?service=git-upload-pack")
+  uploadpack, err := regexp.Compile("^GET /(rancher)-catalog(.git)?/info/refs\\?service=git-upload-pack")
   if err != nil {
     log.Fatal(err)
   }
@@ -45,7 +45,7 @@ func main() {
   stats := NewStats()
   stats.StartLogging()
 
-  var cutoffTime time.Time
+  var cutoffTime     time.Time
   if *period != "" {
     d, err := time.ParseDuration(*period)
     if err != nil {
@@ -81,15 +81,17 @@ func main() {
       continue
     }
 
+    logTime, err := time.Parse("2/Jan/2006:15:04:05 -0700", submatches[1])
+    if err != nil {
+      log.Warn(err)
+      stats.linesSkipped++
+      continue
+    }
+
     // ensure the log line is in the requested period
-    if !cutoffTime.IsZero() {
-      logTime, err := time.Parse("2/Jan/2006:15:04:05 -0700", submatches[1])
-      if err != nil {
-        log.Warn(err)
-      } else if logTime.Before(cutoffTime) {
-        stats.linesSkipped++
-        continue
-      }
+    if !cutoffTime.IsZero() && logTime.Before(cutoffTime) {
+      stats.linesSkipped++
+      continue
     }
 
     // ensure the request is a catalog git-upload-pack
@@ -113,11 +115,10 @@ func main() {
         time.Sleep(WhoisRequestPeriod)
       }
     }
-    stats.ipRequests[ip]++
+    stats.ipRequests[ip] = append(stats.ipRequests[ip], logTime)
   }
   wg.Wait()
   stats.SaveWhoisRecords()
   stats.StopLogging()
-
-  log.Infof("%d unique addresses", len(stats.ipRequests))
+  stats.LogResult()
 }
