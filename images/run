@@ -5,7 +5,6 @@ docker volume rm git-mirror || true
 docker run \
   -d \
   -v git-mirror:/var/git \
-  --net=host \
   --restart=always \
   --name=git-mirror \
     llparse/git-mirror:0.1
@@ -13,8 +12,8 @@ docker run \
 docker run \
   -d \
   -v git-mirror:/var/git \
-  -v /var/log/nginx:/var/log/nginx \
-  --net=host \
+  -v git-log:/var/log/nginx \
+  -p 80:80 \
   --restart=always \
   --name=git-serve \
     llparse/git-serve:0.2
