@@ -3,20 +3,18 @@
   minimum_rancher_version: 1.1.4
   questions:
   - variable: SCALE
-    description: Number of git mirror instances to schedule. Ignored if global is set to 'true'.
+    description: >
+      Number of git mirror instances to schedule.
     label: Mirror Scale
     type: int
     default: 3
   - variable: ETCD_SERVICE
-    description: The Etcd service used for coordinating updates. Invalid or no coordination service will result in poll-only mirroring.
+    description: >
+      The Etcd service used for coordinating updates, in service.stack format.
+      An invalid or no service will fallback to poll-only mirroring.
     label: Etcd Service
-    type: service
-    default: etcd
-  - variable: SERVE_PORT
-    description: Port to serve traffic on
-    label: Port
-    type: int
-    default: 80
+    type: string
+    default: etcd.etcd-ha
   - variable: HOST_LOG_PATH
     description: Host path to bind mount nginx log directory to
     label: Host Log Path
