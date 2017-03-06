@@ -2,6 +2,16 @@
   version: "1.0"
   minimum_rancher_version: 1.1.4
   questions:
+  - variable: SCALE
+    description: Number of git mirror instances to schedule. Ignored if global is set to 'true'.
+    label: Mirror Scale
+    type: int
+    default: 3
+  - variable: ETCD_SERVICE
+    description: The Etcd service used for coordinating updates. Invalid or no coordination service will result in poll-only mirroring.
+    label: Etcd Service
+    type: service
+    default: etcd
   - variable: SERVE_PORT
     description: Port to serve traffic on
     label: Port
@@ -18,7 +28,7 @@
     type: string
     default: 24h
 mirror:
-  scale: 1
+  scale: ${SCALE}
   health_check:
     request_line: GET / HTTP/1.0
     port: 80
