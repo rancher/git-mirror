@@ -1,0 +1,12 @@
+#!/bin/bash
+
+id=$RANDOM
+name=rancher-catalog
+
+data="{\"repository\":{\"id\":$id,\"name\":\"$name\",\"full_name\":\"rancher/$name\"}}"
+
+set -x
+curl \
+  -X POST \
+  -d $data \
+  http://master:4141/postreceive

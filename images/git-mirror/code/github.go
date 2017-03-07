@@ -1,7 +1,7 @@
 package main
 
 import (
-  "encoding/json"
+	"encoding/json"
 )
 
 var exampleJsonPush = []byte(`{
@@ -142,17 +142,17 @@ var exampleJsonPush = []byte(`{
   }`)
 
 type GHPushEvent struct {
-  Repo *GHRepository `json:"repository"`
+	Repo GHRepository `json:"repository"`
 }
 
 type GHRepository struct {
-  Id       int64  `json:"id"`
-  Name     string `json:"name"`
-  FullName string `json:"full_name"`
+	Id       int64  `json:"id"`
+	Name     string `json:"name"`
+	FullName string `json:"full_name"`
 }
 
-func ParsePushEvent(data []byte) (*GHPushEvent, error) {
-  event := GHPushEvent{}
-  err := json.Unmarshal(data, &event)
-  return &event, err
+func ParsePushEvent(data []byte) (GHPushEvent, error) {
+	event := GHPushEvent{}
+	err := json.Unmarshal(data, &event)
+	return event, err
 }

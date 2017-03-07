@@ -16,11 +16,15 @@ docker run \
 
 docker run \
   -d \
+  -p 4141:4141 \
   -v git-mirror:/var/git \
-  -e ETCD_SERVICE=http://etcd:2379 \
+  -e MIRROR_GITHUB_LISTEN_ADDR=:4141 \
+  -e MIRROR_ETCD_ENDPOINTS=http://etcd:2379 \
+  -e MIRROR_REPO=https://github.com/rancher/rancher-catalog \
   --link etcd:etcd \
   --name git-mirror \
-    llparse/git-mirror:0.1
+    llparse/git-mirror:0.2 \
+      -repo https://github.com/rancher/community-catalog
 
 docker run \
   -d \
