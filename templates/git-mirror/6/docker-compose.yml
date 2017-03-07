@@ -46,7 +46,7 @@ services:
       ETCD_HEARTBEAT_INTERVAL: '${ETCD_HEARTBEAT_INTERVAL}'
       ETCD_ELECTION_TIMEOUT: '${ETCD_ELECTION_TIMEOUT}'
     volumes:
-    - etcd:/pdata
+    - /pdata
 volumes:
   git-mirror:
     driver: "local"
