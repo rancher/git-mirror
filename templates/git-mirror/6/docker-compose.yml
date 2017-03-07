@@ -46,7 +46,11 @@ services:
       ETCD_HEARTBEAT_INTERVAL: '${ETCD_HEARTBEAT_INTERVAL}'
       ETCD_ELECTION_TIMEOUT: '${ETCD_ELECTION_TIMEOUT}'
     volumes:
+    {{- if eq .Values.ETCD_STORAGE "persistent" }}
+    - etcd:/pdata
+    {{- else }}
     - /pdata
+    {{- end }}
 volumes:
   git-mirror:
     driver: "local"
@@ -55,3 +59,8 @@ volumes:
       type: tmpfs
       device: tmpfs
       o: size=64M,nodev,nosuid
+  {{- if eq .Values.ETCD_STORAGE "persistent" }}
+  etcd:
+    driver: local
+    per_container: true
+  {{- end }}
