@@ -53,7 +53,7 @@ services:
     {{- end }}
 volumes:
   git-mirror:
-    driver: "local"
+    driver: local
     per_container: true
     driver_opts: 
       type: tmpfs

@@ -55,7 +55,7 @@
     description: >
       Store etcd data on the host in a local volume (persistent) or within the
       container (ephemeral).
-    default: ephemeral
+    default: persistent
     type: enum
     options:
     - ephemeral
