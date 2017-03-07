@@ -97,6 +97,7 @@ func loadConfig() *config {
 	} else {
 		log.SetLevel(log.InfoLevel)
 	}
+	//log.SetFormatter(&log.JSONFormatter{})
 
 	return &cfg
 }

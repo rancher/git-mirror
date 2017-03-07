@@ -35,19 +35,20 @@ func newClient(cfg *config) *client {
 		config: cfg,
 	}
 
-	etcdConfig := etcdclient.Config{
-		Endpoints:               cfg.etcdEndpoints,
-		Transport:               etcdclient.DefaultTransport,
-		HeaderTimeoutPerRequest: 3 * time.Second,
-	}
-	etcdClient, err := etcdclient.New(etcdConfig)
-	if err == nil {
-		c.kapi = etcdclient.NewKeysAPI(etcdClient)
-		err = c.testKapi()
-	}
-	if err != nil {
-		log.Warn(errors.New(err.Error() + ". Mirror operating in poll-only mode."))
-		c.kapi = nil
+	if len(cfg.etcdEndpoints) > 0 {
+		etcdConfig := etcdclient.Config{
+			Endpoints:               cfg.etcdEndpoints,
+			Transport:               etcdclient.DefaultTransport,
+			HeaderTimeoutPerRequest: 3 * time.Second,
+		}
+		etcdClient, err := etcdclient.New(etcdConfig)
+		if err == nil {
+			c.kapi = etcdclient.NewKeysAPI(etcdClient)
+			err = c.testKapi()
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	for _, repoURL := range cfg.Repositories {
@@ -59,7 +60,6 @@ func newClient(cfg *config) *client {
 }
 
 func main() {
-	//log.SetFormatter(&log.JSONFormatter{})
 	cfg := loadConfig()
 	client := newClient(cfg)
 
