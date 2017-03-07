@@ -16,12 +16,12 @@ type Client struct {
   pollTicker *time.Ticker
 }
 
-func NewClient(config *Config) *Client {
+func NewClient(cfg *Config) *Client {
   c := &Client{
-    config: config,
+    config: cfg,
   }
-  for _, repoUrl := range config.Repositories {
-    repo := NewRepository(repoUrl, config.Dir)
+  for _, repoUrl := range cfg.Repositories {
+    repo := NewRepository(repoUrl, cfg.Dir)
     c.repos = append(c.repos, repo)
   }
   c.pollTicker = time.NewTicker(c.config.PollPeriod)
@@ -30,14 +30,18 @@ func NewClient(config *Config) *Client {
 
 func main() {
   //log.SetFormatter(&log.JSONFormatter{})
+  cfg := LoadConfig()
+  client := NewClient(cfg)
 
-  config := LoadConfig()
-  client := NewClient(config)
+  if cfg.kapi != nil {
+    log.Info("Starting HTTP server to receive GitHub events")
+    go func() {
+      http.Handle("/postreceive", client)
+      log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
+    }()
+  }
 
-  go client.poll()
-
-  http.Handle("/postreceive", client)
-  log.Fatal(http.ListenAndServe(config.GithubListenAddress, nil))
+  client.poll()
 }
 
 func (c *Client) poll() {

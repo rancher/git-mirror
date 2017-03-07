@@ -1,15 +1,19 @@
 package main
 
 import (
+  "errors"
   "flag"
+  "fmt"
   "io/ioutil"
+  "math/rand"
   "os"
   "strings"
   "time"
 
   log "github.com/Sirupsen/logrus"
   "gopkg.in/yaml.v2"
-//  "github.com/coreos/etcd/client"
+  "golang.org/x/net/context"
+  "github.com/coreos/etcd/client"
 )
 
 type arrayFlags []string
@@ -33,6 +37,8 @@ type Config struct {
   GithubListenAddress string
   PollPeriod          time.Duration
   Repositories        arrayFlags
+
+  kapi                client.KeysAPI
 }
 
 func FlagToEnv(prefix, name string) string {
@@ -50,6 +56,16 @@ func setFlagsFromEnv(fs *flag.FlagSet) error {
     }
   })
   return err
+}
+
+func (c *Config) testKapi() error {
+  testKey := fmt.Sprintf("/test%d", rand.Int63())
+  if _, err := c.kapi.Set(context.Background(), testKey, "test", nil); err != nil {
+    return err
+  } else {
+    _, err := c.kapi.Delete(context.Background(), testKey, nil)
+    return err
+  }
 }
 
 func LoadConfig() *Config {
@@ -80,6 +96,21 @@ func LoadConfig() *Config {
     if err = yaml.Unmarshal(data, &cfg); err != nil {
       log.Fatal("Couldn't unmarshal config file: " + err.Error())
     }    
+  }
+
+  etcdConfig := client.Config{
+    Endpoints:               cfg.etcdEndpoints,
+    Transport:               client.DefaultTransport,
+    HeaderTimeoutPerRequest: 3 * time.Second,
+  }
+  c, err := client.New(etcdConfig)
+  if err == nil {
+    cfg.kapi = client.NewKeysAPI(c)
+    err = cfg.testKapi()
+  }
+  if err != nil {
+    log.Warn(errors.New(err.Error() + ". Mirror operating in poll-only mode."))
+    cfg.kapi = nil
   }
 
   log.WithFields(log.Fields{
