@@ -19,7 +19,7 @@ func (i *arrayFlags) String() string {
 
 func (i *arrayFlags) Set(value string) error {
 	for _, v := range strings.Split(value, ",") {
-		*i = append(*i, v)
+		*i = append(*i, strings.TrimSpace(v))
 	}
 	return nil
 }
