@@ -14,7 +14,7 @@
       An invalid or no service will fallback to poll-only mirroring.
     label: Etcd Service
     type: string
-    default: etcd.etcd-ha
+    default: http://etcd.etcd-ha:2379
   - variable: HOST_LOG_PATH
     description: Host path to bind mount nginx log directory to
     label: Host Log Path

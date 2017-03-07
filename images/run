@@ -1,12 +1,25 @@
 #!/bin/bash
 
+docker rm -f etcd git-mirror git-serve
 docker volume rm git-mirror || true
+docker volume rm etcd || true
+
+docker run \
+  -d \
+  -p 2379:2379 \
+  -v etcd:/data \
+  --name etcd \
+  -e ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379 \
+  -e ETCD_ADVERTISE_CLIENT_URLS=http://master:2379 \
+  -e ETCD_DATA_DIR=/data \
+  quay.io/coreos/etcd:v2.3.7
 
 docker run \
   -d \
   -v git-mirror:/var/git \
-  --restart=always \
-  --name=git-mirror \
+  -e ETCD_SERVICE=http://etcd:2379 \
+  --link etcd:etcd \
+  --name git-mirror \
     llparse/git-mirror:0.1
 
 docker run \
@@ -14,6 +27,5 @@ docker run \
   -v git-mirror:/var/git \
   -v git-log:/var/log/nginx \
   -p 80:80 \
-  --restart=always \
-  --name=git-serve \
-    llparse/git-serve:0.2
+  --name git-serve \
+    llparse/git-serve:0.3

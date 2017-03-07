@@ -2,7 +2,6 @@ package main
 
 import (
   "errors"
-  "flag"
   "fmt"
   "io/ioutil"
   "net/http"
@@ -22,27 +21,23 @@ func NewClient(config *Config) *Client {
     config: config,
   }
   for _, repoUrl := range config.Repositories {
-    repo := NewRepository(repoUrl, config.StorageDir)
+    repo := NewRepository(repoUrl, config.Dir)
     c.repos = append(c.repos, repo)
   }
-  c.pollTicker = time.NewTicker(c.config.PollInterval)
+  c.pollTicker = time.NewTicker(c.config.PollPeriod)
   return c
 }
 
 func main() {
   //log.SetFormatter(&log.JSONFormatter{})
 
-  var configPath string
-  flag.StringVar(&configPath, "config-file", "config.yaml", "location of the YAML configuration file")
-  flag.Parse()
-
-  config := LoadConfig(configPath)
+  config := LoadConfig()
   client := NewClient(config)
 
   go client.poll()
 
   http.Handle("/postreceive", client)
-  log.Fatal(http.ListenAndServe(":4141", nil))
+  log.Fatal(http.ListenAndServe(config.GithubListenAddress, nil))
 }
 
 func (c *Client) poll() {
