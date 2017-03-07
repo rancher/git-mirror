@@ -6,5 +6,5 @@ VERSION=${VERSION:-0.3}
 NAME=git-serve
 
 docker build -t $ACCT/$NAME:$VERSION .
-#docker push $ACCT/$NAME:$VERSION
+docker push $ACCT/$NAME:$VERSION
 

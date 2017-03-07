@@ -10,23 +10,23 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-type Repository struct {
+type repository struct {
 	sync.Mutex
 	url       string
 	name      string
 	targetDir string
 }
 
-func NewRepository(url string, baseDir string) *Repository {
-	var r Repository
+func newRepository(url string, baseDir string) *repository {
+	var r repository
 	r.url = url
-	r.name = r.nameFromUrl()
+	r.name = r.nameFromURL()
 	r.targetDir = filepath.Join(baseDir, r.name)
-	go r.Mirror()
+	r.mirror()
 	return &r
 }
 
-func (r *Repository) Mirror() {
+func (r *repository) mirror() {
 	r.Lock()
 	defer r.Unlock()
 
@@ -45,18 +45,18 @@ func (r *Repository) Mirror() {
 	log.WithFields(log.Fields{"Repo": r.name}).Info("Cloned")
 }
 
-func (r *Repository) Fetch(reason string) {
+func (r *repository) fetch(reason string) {
 	r.Lock()
 	defer r.Unlock()
 
-	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Info("Fetching")
+	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Fetching")
 	cmd := exec.Command("git", "-C", r.targetDir, "fetch", "-p", "origin")
 
 	if err := cmd.Run(); err != nil {
 		log.Fatal("Error fetching origin: " + err.Error())
 	}
 
-	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Info("Fetched")
+	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Fetched")
 }
 
 func pathExists(path string) bool {
@@ -67,7 +67,7 @@ func pathExists(path string) bool {
 	return true
 }
 
-func (r *Repository) nameFromUrl() string {
+func (r *repository) nameFromURL() string {
 	parts := strings.Split(r.url, "/")
 	name := parts[len(parts)-1]
 	return strings.TrimSuffix(name, ".git")

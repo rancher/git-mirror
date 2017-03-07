@@ -6,43 +6,43 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/coreos/etcd/client"
+	etcdclient "github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 )
 
-type Client struct {
-	config     *Config
-	repos      []*Repository
+type client struct {
+	config     *config
+	repos      []*repository
 	pollTicker *time.Ticker
-	kapi       client.KeysAPI
+	kapi       etcdclient.KeysAPI
 }
 
-func (c *Client) testKapi() error {
+func (c *client) testKapi() error {
 	testKey := fmt.Sprintf("/test%d", rand.Int63())
 	if _, err := c.kapi.Set(context.Background(), testKey, "test", nil); err != nil {
 		return err
-	} else {
-		_, err := c.kapi.Delete(context.Background(), testKey, nil)
-		return err
 	}
+	_, err := c.kapi.Delete(context.Background(), testKey, nil)
+	return err
 }
 
-func NewClient(cfg *Config) *Client {
-	c := &Client{
+func newClient(cfg *config) *client {
+	c := &client{
 		config: cfg,
 	}
 
-	etcdConfig := client.Config{
+	etcdConfig := etcdclient.Config{
 		Endpoints:               cfg.etcdEndpoints,
-		Transport:               client.DefaultTransport,
+		Transport:               etcdclient.DefaultTransport,
 		HeaderTimeoutPerRequest: 3 * time.Second,
 	}
-	etcdClient, err := client.New(etcdConfig)
+	etcdClient, err := etcdclient.New(etcdConfig)
 	if err == nil {
-		c.kapi = client.NewKeysAPI(etcdClient)
+		c.kapi = etcdclient.NewKeysAPI(etcdClient)
 		err = c.testKapi()
 	}
 	if err != nil {
@@ -50,8 +50,8 @@ func NewClient(cfg *Config) *Client {
 		c.kapi = nil
 	}
 
-	for _, repoUrl := range cfg.Repositories {
-		repo := NewRepository(repoUrl, cfg.Dir)
+	for _, repoURL := range cfg.Repositories {
+		repo := newRepository(repoURL, cfg.Dir)
 		c.repos = append(c.repos, repo)
 	}
 	c.pollTicker = time.NewTicker(c.config.PollPeriod)
@@ -60,8 +60,8 @@ func NewClient(cfg *Config) *Client {
 
 func main() {
 	//log.SetFormatter(&log.JSONFormatter{})
-	cfg := LoadConfig()
-	client := NewClient(cfg)
+	cfg := loadConfig()
+	client := newClient(cfg)
 
 	if client.kapi != nil {
 		log.Info("Starting HTTP server to receive GitHub events")
@@ -75,30 +75,68 @@ func main() {
 	client.poll()
 }
 
-func (c *Client) poll() {
+func (c *client) poll() {
+	log.WithFields(log.Fields{"Period": c.config.PollPeriod}).Info("Starting poll ticker")
 	for _ = range c.pollTicker.C {
 		for _, repo := range c.repos {
-			go repo.Fetch("poll")
+			go repo.fetch("poll")
 		}
 	}
 }
 
-func (c *Client) watchEvents() {
+var repoKeyChroot = "/git-mirror"
+
+// watchEvents watches for github push events published to etcd
+func (c *client) watchEvents() {
 	log.Info("Starting event watcher")
+	w := c.kapi.Watcher(repoKeyChroot, &etcdclient.WatcherOptions{
+		Recursive: true,
+	})
 
-}
+	for {
+		if resp, err := w.Next(context.Background()); err != nil {
+			log.WithFields(log.Fields{
+				"message": err.Error(),
+			}).Warn("Error receiving watch event")
+		} else {
+			log.WithFields(log.Fields{
+				"Action":        resp.Action,
+				"Key":           resp.Node.Key,
+				"CreatedIndex":  resp.Node.CreatedIndex,
+				"ModifiedIndex": resp.Node.ModifiedIndex,
+			}).Info("Received watch event")
 
-func (c *Client) writeEvent(e GHPushEvent) {
-	key := fmt.Sprintf("/repo/%s", e.Repo.Name)
-	val := fmt.Sprintf("%d", e.Repo.Id)
-	if resp, err := c.kapi.Set(context.Background(), key, val, nil); err != nil {
-		log.Warnf("Error writing event: %v", err)
-	} else {
-		log.Infof("Wrote event: %+v", resp)
+			if resp.Action == "set" {
+				repoName := strings.TrimPrefix(resp.Node.Key, repoKeyChroot+"/")
+				if repo, err2 := c.getRepoByName(repoName); err2 != nil {
+					log.WithFields(log.Fields{"Reason": "event", "Repo": repoName}).Error(err2)
+				} else {
+					repo.fetch("event")
+				}
+			}
+		}
 	}
 }
 
-func (c *Client) GetRepoByName(name string) (*Repository, error) {
+// writeEvent writes the GH push event to etcd
+func (c *client) writeEvent(e githubPushEvent) {
+	key := fmt.Sprintf("%s/%s", repoKeyChroot, e.Repo.Name)
+	val := fmt.Sprintf("%d", e.Repo.ID)
+
+	log.WithFields(log.Fields{
+		"repo": e.Repo.Name,
+		"id":   e.Repo.ID,
+	}).Debug("Writing event")
+
+	if _, err := c.kapi.Set(context.Background(), key, val, nil); err != nil {
+		log.WithFields(log.Fields{
+			"repo": e.Repo.Name,
+			"id":   e.Repo.ID,
+		}).Error("Error writing event")
+	}
+}
+
+func (c *client) getRepoByName(name string) (*repository, error) {
 	for _, repo := range c.repos {
 		if repo.name == name {
 			return repo, nil
@@ -107,13 +145,13 @@ func (c *Client) GetRepoByName(name string) (*Repository, error) {
 	return nil, errors.New("Repo not being mirrored")
 }
 
-func (c *Client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	event, err := ParsePushEvent(data)
+	event, err := parsePushEvent(data)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Error(err)
@@ -122,14 +160,11 @@ func (c *Client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Not found")
 	} else {
-		c.writeEvent(event)
-		// TODO: send message to all mirror hosts (LB will only tell 1 host about event)
-		repo, err := c.GetRepoByName(event.Repo.Name)
-		if err != nil {
-			log.WithFields(log.Fields{"Reason": "event", "Repo": event.Repo.Name}).Error(err)
-			return
-		}
-		go repo.Fetch("event")
+		log.WithFields(log.Fields{
+			"repo": event.Repo.Name,
+			"id":   event.Repo.ID,
+		}).Info("Received GitHub event")
+		go c.writeEvent(event)
 		fmt.Fprintf(w, "OK")
 	}
 }

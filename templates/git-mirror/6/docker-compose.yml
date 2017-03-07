@@ -1,7 +1,7 @@
 version: '2'
 services:
   mirror:
-    image: llparse/git-mirror:0.1
+    image: llparse/git-mirror:0.2
     environment:
       ETCD_SERVICE: ${ETCD_SERVICE}
     labels:

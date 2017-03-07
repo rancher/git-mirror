@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-var exampleJsonPush = []byte(`{
+var exampleJSONPush = []byte(`{
   "ref": "refs/heads/test",
   "before": "0000000000000000000000000000000000000000",
   "after": "7abc80b1847e64af2658317ef3307875e4ca8b84",
@@ -141,18 +141,18 @@ var exampleJsonPush = []byte(`{
     "site_admin": false
   }`)
 
-type GHPushEvent struct {
-	Repo GHRepository `json:"repository"`
+type githubPushEvent struct {
+	Repo githubRepository `json:"repository"`
 }
 
-type GHRepository struct {
-	Id       int64  `json:"id"`
+type githubRepository struct {
+	ID       int64  `json:"id"`
 	Name     string `json:"name"`
 	FullName string `json:"full_name"`
 }
 
-func ParsePushEvent(data []byte) (GHPushEvent, error) {
-	event := GHPushEvent{}
+func parsePushEvent(data []byte) (githubPushEvent, error) {
+	event := githubPushEvent{}
 	err := json.Unmarshal(data, &event)
 	return event, err
 }

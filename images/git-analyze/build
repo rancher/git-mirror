@@ -17,6 +17,6 @@ docker run \
       go build
 
 docker build -t $ACCT/$NAME:$VERSION .
-#docker push $ACCT/$NAME:$VERSION
+docker push $ACCT/$NAME:$VERSION
 
 rm -f code/$NAME

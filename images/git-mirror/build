@@ -18,6 +18,6 @@ docker run \
       go build
 
 docker build -t $ACCT/git-mirror:$VERSION .
-#docker push $ACCT/git-mirror:$VERSION
+docker push $ACCT/git-mirror:$VERSION
 
 rm -f code/git-mirror
