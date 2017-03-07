@@ -18,7 +18,7 @@ services:
     volumes:
        - git-mirror:/var/git
   serve:
-    image: llparse/git-serve:0.3
+    image: llparse/git-serve:0.4
     labels:
       io.rancher.container.pull_image: always
     network_mode: container:mirror
