@@ -26,7 +26,7 @@ services:
       - git-mirror:/var/git
       - ${HOST_LOG_PATH}:/var/log/nginx
   analyze:
-    image: llparse/git-analyze:0.2
+    image: llparse/git-analyze:0.3
     command: -period 24h
     labels:
       io.rancher.container.pull_image: always
