@@ -2,7 +2,8 @@
 
 id=$RANDOM
 name=rancher-catalog
-endpoint=http://master:4141
+#endpoint=http://master:4141
+endpoint=http://git.yames.me
 
 data="{\"repository\":{\"id\":$id,\"name\":\"$name\",\"full_name\":\"rancher/$name\"}}"
 

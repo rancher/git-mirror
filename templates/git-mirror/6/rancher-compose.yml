@@ -2,19 +2,18 @@
   version: "1.0"
   minimum_rancher_version: 1.1.4
   questions:
-  - variable: SCALE
+  - variable: MIRROR_SCALE
     description: >
       Number of git mirror instances to schedule.
     label: Mirror Scale
     type: int
     default: 3
-  - variable: ETCD_ENDPOINTS
+  - variable: ETCD_SCALE
     description: >
-      The Etcd service used for coordinating updates, in service.stack format.
-      An invalid or no service will fallback to poll-only mirroring.
-    label: Etcd Service
-    type: string
-    default: http://etcd.etcd-ha:2379
+      Number of etcd instances to schedule.
+    label: Etcd Scale
+    type: int
+    default: 3
   - variable: POLL_PERIOD
     description: >
       Poll each Git repository for changes after a configurable period of time.
@@ -39,8 +38,30 @@
     label: Host Log Path
     type: string
     default: /efs
+  - variable: ETCD_HEARTBEAT_INTERVAL
+    label: Etcd Heartbeat Interval
+    description: Time (in milliseconds) of a heartbeat interval.
+    required: true
+    default: 500
+    type: int
+  - variable: ETCD_ELECTION_TIMEOUT
+    label: Etcd Election Timeout
+    description: Time (in milliseconds) for an election to timeout.
+    required: true
+    default: 5000
+    type: int
+etcd:
+  retain_ip: true
+  scale: ${ETCD_SCALE}
+  health_check:
+    request_line: GET /health HTTP/1.0
+    port: 2378
+    interval: 5000
+    response_timeout: 3000
+    unhealthy_threshold: 2
+    healthy_threshold: 2
 mirror:
-  scale: ${SCALE}
+  scale: ${MIRROR_SCALE}
   health_check:
     request_line: GET / HTTP/1.0
     port: 80
