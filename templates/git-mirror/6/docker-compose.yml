@@ -4,7 +4,7 @@ services:
     image: llparse/git-mirror:0.2
     environment:
       MIRROR_ETCD_ENDPOINTS: '${ETCD_ENDPOINTS}'
-      MIRROR_DATA_DIR: /data
+      MIRROR_DATA_DIR: /var/git
       MIRROR_GITHUB_LISTEN_ADDR: :4141
       MIRROR_POLL_PERIOD: '${POLL_PERIOD}'
       MIRROR_REPO: '${REPO}'
@@ -16,14 +16,14 @@ services:
     ports:
       - 80/tcp
     volumes:
-       - git-mirror:/data
+       - git-mirror:/var/git
   serve:
-    image: llparse/git-serve:0.4
+    image: llparse/git-serve:0.3
     labels:
       io.rancher.container.pull_image: always
     network_mode: container:mirror
     volumes:
-      - git-mirror:/data
+      - git-mirror:/var/git
       - ${HOST_LOG_PATH}:/var/log/nginx
   analyze:
     image: llparse/git-analyze:0.2
