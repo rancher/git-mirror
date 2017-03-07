@@ -3,7 +3,12 @@ services:
   mirror:
     image: llparse/git-mirror:0.2
     environment:
-      ETCD_SERVICE: ${ETCD_SERVICE}
+      MIRROR_ETCD_ENDPOINTS: '${ETCD_ENDPOINTS}'
+      MIRROR_DATA_DIR: /data
+      MIRROR_GITHUB_LISTEN_ADDR: :4141
+      MIRROR_POLL_PERIOD: '${POLL_PERIOD}'
+      MIRROR_REPO: '${REPO}'
+      MIRROR_DEBUG: '${DEBUG}'
     labels:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
@@ -11,18 +16,18 @@ services:
     ports:
       - 80/tcp
     volumes:
-       - git-mirror:/var/git
+       - git-mirror:/data
   serve:
     image: llparse/git-serve:0.3
     labels:
       io.rancher.container.pull_image: always
     network_mode: container:mirror
     volumes:
-      - git-mirror:/var/git
+      - git-mirror:/data
       - ${HOST_LOG_PATH}:/var/log/nginx
   analyze:
     image: llparse/git-analyze:0.2
-    command: -period ${ANALYSIS_PERIOD}
+    command: -period 24h
     labels:
       io.rancher.container.pull_image: always
       io.rancher.container.start_once: 'true'

@@ -8,23 +8,37 @@
     label: Mirror Scale
     type: int
     default: 3
-  - variable: ETCD_SERVICE
+  - variable: ETCD_ENDPOINTS
     description: >
       The Etcd service used for coordinating updates, in service.stack format.
       An invalid or no service will fallback to poll-only mirroring.
     label: Etcd Service
     type: string
     default: http://etcd.etcd-ha:2379
+  - variable: POLL_PERIOD
+    description: >
+      Poll each Git repository for changes after a configurable period of time.
+    label: Polling Period
+    type: string
+    default: 5m
+  - variable: REPO
+    description: Comma-delimited list of Git repositories to mirror.
+    label: Mirrored Repos
+    type: string
+    default: >
+      https://github.com/rancher/rancher-catalog,
+      https://github.com/rancher/community-catalog,
+      https://github.com/rancher/infra-catalog
+  - variable: DEBUG
+    description: Enable debug-level logging.
+    label: Debug Logging
+    type: boolean
+    default: false
   - variable: HOST_LOG_PATH
     description: Host path to bind mount nginx log directory to
     label: Host Log Path
     type: string
     default: /efs
-  - variable: ANALYSIS_PERIOD
-    description: Do not consider log entries older than this period of time
-    label: Analysis Period
-    type: string
-    default: 24h
 mirror:
   scale: ${SCALE}
   health_check:
