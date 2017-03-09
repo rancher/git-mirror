@@ -1,6 +1,17 @@
 #!/bin/bash
 
+# Generate nginx/site configuration
+confd -onetime -backend env
+
+# Activate site configuration
+rm -rf /etc/nginx/sites-enabled/*
+ln -fs /etc/nginx/sites-available/git.conf /etc/nginx/sites-enabled/git.conf
+
 echo OK > /var/git/index.html
+
+# Turn up services
 service fcgiwrap start
 service nginx start
+
+# Send error logs to stdout
 tail -f /var/log/nginx/error.log
