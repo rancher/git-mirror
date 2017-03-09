@@ -19,6 +19,9 @@ services:
        - git-mirror:/var/git
   serve:
     image: llparse/git-serve:0.5
+    environment:
+      SERVER_NAME: ${SERVER_NAME}
+      WORKER_CONNECTIONS: ${WORKER_CONNECTIONS}
     labels:
       io.rancher.container.pull_image: always
     network_mode: container:mirror

@@ -4,7 +4,7 @@ pid /run/nginx.pid;
 
 events {
         use                     epoll;
-        worker_connections      4096;
+        worker_connections      {{getenv "WORKER_CONNECTIONS"}};
         multi_accept            on;
 }
 
@@ -41,8 +41,8 @@ http {
         log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for ' 
                         '"$request" $status $body_bytes_sent "$http_referer" '
                         '"$http_user_agent" $request_time $upstream_response_time';
-        access_log /var/log/nginx/access.log main buffer=64k flush=1m;
-        error_log /var/log/nginx/error.log;
+        access_log /var/log/nginx/access-{{getenv "RANCHER_SERVICE_INDEX"}}.log main buffer=64k flush=1m;
+        error_log /var/log/nginx/error-{{getenv "RANCHER_SERVICE_INDEX"}}.log;
 
         ##
         # Gzip Settings
@@ -63,5 +63,5 @@ http {
         ##
 
         include /etc/nginx/conf.d/*.conf;
-        include /etc/nginx/sites-enabled/*;
+        include /etc/nginx/sites-enabled/git.conf;
 }

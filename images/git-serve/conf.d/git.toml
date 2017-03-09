@@ -1,4 +1,6 @@
 [template]
 src = "git.tmpl"
-dest = "/etc/nginx/sites-available/git.conf"
-keys = []
+dest = "/etc/nginx/sites-enabled/git.conf"
+keys = [
+  "SERVER_NAME"
+]

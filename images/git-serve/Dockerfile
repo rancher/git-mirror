@@ -9,8 +9,8 @@ RUN \
   chmod +x /usr/bin/confd && \
   mkdir -p /etc/confd
 
-ONBUILD ADD templates /etc/confd/templates/
-ONBUILD ADD conf.d /etc/confd/conf.d/
+ADD templates /etc/confd/templates/
+ADD conf.d /etc/confd/conf.d/
 
 ADD entrypoint /
 ENTRYPOINT ["/entrypoint"]

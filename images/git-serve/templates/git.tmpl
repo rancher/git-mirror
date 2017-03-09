@@ -4,7 +4,7 @@ server {
  
   root /var/git;
  
-  server_name git.rancher.io;
+  server_name {{getenv "SERVER_NAME"}};
  
  location = / {
     index index.html;

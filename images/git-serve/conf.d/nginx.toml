@@ -1,4 +1,7 @@
 [template]
 src = "nginx.tmpl"
 dest = "/etc/nginx/nginx.conf"
-keys = []
+keys = [
+  "RANCHER_SERVICE_INDEX",
+  "WORKER_CONNECTIONS"
+]

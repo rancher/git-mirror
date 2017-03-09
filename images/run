@@ -32,4 +32,4 @@ docker run \
   -v git-log:/var/log/nginx \
   -p 80:80 \
   --name git-serve \
-    llparse/git-serve:0.4
+    llparse/git-serve:0.5

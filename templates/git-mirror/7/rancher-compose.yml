@@ -60,6 +60,18 @@
     options:
     - ephemeral
     - persistent
+  - variable: SERVER_NAME
+    label: Server Name
+    description: The name of the Nginx server
+    required: true
+    default: git.rancher.io
+    type: string
+  - variable: WORKER_CONNECTIONS
+    label: Nginx Worker Connections
+    description: Number of connections to accept per Nginx worker process
+    required: true
+    default: 4096
+    type: int
 etcd:
   retain_ip: true
   scale: ${ETCD_SCALE}
