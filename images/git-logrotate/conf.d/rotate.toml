@@ -1,0 +1,6 @@
+[template]
+src = "rotate.tmpl"
+dest = "/rotate.cfg"
+keys = [
+  "RANCHER_SERVICE_INDEX"
+]

@@ -1,0 +1,8 @@
+"/log/access-{{getenv "RANCHER_SERVICE_INDEX"}}.log" /log/error-{{getenv "RANCHER_SERVICE_INDEX"}}.log {
+  rotate 365
+  daily
+  postrotate
+    [ ! -f /var/run/nginx.pid ] || kill -USR1 `cat /var/run/nginx.pid`
+  endscript
+  nocompress
+}
