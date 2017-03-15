@@ -17,4 +17,4 @@ load_service_index
 
 confd -onetime -backend env
 
-logrotate -v -f /nginx.logrotate
+exec "$@"

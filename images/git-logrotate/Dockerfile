@@ -11,4 +11,5 @@ ADD templates /etc/confd/templates/
 ADD conf.d /etc/confd/conf.d/
 
 ADD entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["logrotate", "-v", "-f", "/rotate.cfg"]
