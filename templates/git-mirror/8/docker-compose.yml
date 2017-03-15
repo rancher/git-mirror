@@ -38,7 +38,7 @@ services:
     - serve
     network_mode: none
     volumes:
-    - ${HOST_LOG_PATH}:/var/log/nginx
+    - ${HOST_LOG_PATH}:/log
   analyze:
     image: llparse/git-analyze:0.4
     command: -period 24h
