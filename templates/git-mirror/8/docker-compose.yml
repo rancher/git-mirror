@@ -12,7 +12,7 @@ services:
     labels:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
-      io.rancher.sidekicks: serve
+      io.rancher.sidekicks: serve,logrotate
     links:
     - etcd
     volumes:
@@ -26,8 +26,20 @@ services:
       io.rancher.container.pull_image: always
     network_mode: container:mirror
     volumes:
-      - git-mirror:/var/git
-      - ${HOST_LOG_PATH}:/var/log/nginx
+    - git-mirror:/var/git
+    - ${HOST_LOG_PATH}:/var/log/nginx
+  logrotate:
+    image: alpine
+    entrypoint: /bin/sh
+    command: "echo hi"
+    labels:
+      io.rancher.container.start_once: 'true'
+      cron.schedule: "0 * * * * ?"
+    links:
+    - serve
+    network_mode: none
+    volumes:
+    - ${HOST_LOG_PATH}:/var/log/nginx
   analyze:
     image: llparse/git-analyze:0.3
     command: -period 24h
@@ -38,7 +50,7 @@ services:
     links:
     - mirror
     volumes:
-      - ${HOST_LOG_PATH}:/var/log/nginx
+    - ${HOST_LOG_PATH}:/var/log/nginx
   etcd:
     image: rancher/etcd:v2.3.7-11
     labels:
