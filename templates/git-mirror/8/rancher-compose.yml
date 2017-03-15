@@ -76,7 +76,7 @@
     label: Log Rotation Schedule
     description: The cron-like schedule for performing logrotation on nginx containers. Default is Midnight MST.
     required: true
-    default: "0 0 17 * * *"
+    default: "0 0 7 * * *"
     type: string
 etcd:
   retain_ip: true
