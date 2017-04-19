@@ -18,8 +18,8 @@ const (
 )
 
 func main() {
-	var file_path = flag.String("filepath", "/var/log/nginx/access.log", "Log files to analyze, wildcard allowed between quotes.")
-	var period = flag.String("period", "24h", "period of time (past to now) to analyze")
+	var file_path = flag.String("filepath", "/var/log/nginx/access-*.log.1", "Log files to analyze, wildcard allowed between quotes.")
+	var period = flag.String("period", "48h", "period of time (past to now) to analyze")
 	flag.Parse()
 
 	files , err := filepath.Glob(*file_path)
