@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"flag"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sync"
 	"time"
-	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -19,10 +19,10 @@ const (
 
 func main() {
 	var file_path = flag.String("filepath", "/var/log/nginx/access-*.log.1", "Log files to analyze, wildcard allowed between quotes.")
-	var period = flag.String("period", "48h", "period of time (past to now) to analyze")
+	var _ = flag.String("period", "72h", "period of time (past to now) to analyze")
 	flag.Parse()
 
-	files , err := filepath.Glob(*file_path)
+	files, err := filepath.Glob(*file_path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,17 +42,6 @@ func main() {
 
 	stats := NewStats()
 	stats.StartLogging()
-
-	var cutoffTime time.Time
-	if *period != "" {
-		d, err := time.ParseDuration(*period)
-		if err != nil {
-			log.Warnf("Invalid duration: %s", *period)
-		} else {
-			cutoffTime = time.Now().Add(-d).Round(time.Second)
-			log.Infof("Cutoff Time: %v", cutoffTime)
-		}
-	}
 
 	// Getting stats for every file
 	for _, f := range files {
@@ -80,12 +69,6 @@ func main() {
 			logTime, err := time.Parse("2/Jan/2006:15:04:05 -0700", submatches[1])
 			if err != nil {
 				log.Warn(err)
-				stats.linesSkipped++
-				continue
-			}
-
-			// ensure the log line is in the requested period
-			if !cutoffTime.IsZero() && logTime.Before(cutoffTime) {
 				stats.linesSkipped++
 				continue
 			}

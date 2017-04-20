@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	StatsLogPeriod = 5 * time.Second
+	StatsLogPeriod = 15 * time.Second
 	WhoisFilename  = "/var/log/nginx/whois.json"
 )
 
