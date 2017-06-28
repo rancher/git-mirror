@@ -1,0 +1,94 @@
+version: '2'
+services:
+  mirror:
+    image: llparse/git-mirror:0.2
+    environment:
+      MIRROR_ETCD_ENDPOINTS: 'http://etcd:2379'
+      MIRROR_DATA_DIR: /var/git
+      MIRROR_GITHUB_LISTEN_ADDR: :4141
+      MIRROR_POLL_PERIOD: '${POLL_PERIOD}'
+      MIRROR_REPO: '${REPO}'
+      MIRROR_DEBUG: '${DEBUG}'
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+      io.rancher.sidekicks: serve,logrotate
+    links:
+    - etcd
+    volumes:
+    - git-mirror:/var/git
+  serve:
+    image: llparse/git-serve:0.5
+    environment:
+      SERVER_NAME: ${SERVER_NAME}
+      WORKER_CONNECTIONS: ${WORKER_CONNECTIONS}
+    ipc: host
+    pid: host
+    labels:
+      io.rancher.container.pull_image: always
+    network_mode: container:mirror
+    volumes:
+    - git-mirror:/var/git
+    - ${HOST_LOG_PATH}:/var/log/nginx
+    - git-serve-run:/run
+  logrotate:
+    image: llparse/git-logrotate:0.1
+    #ipc: container:serve
+    ipc: host
+    pid: host
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+      cron.schedule: "${LOGROTATE_SCHEDULE}"
+    links:
+    - serve
+    network_mode: container:mirror
+    volumes:
+    - ${HOST_LOG_PATH}:/log
+    - git-serve-run:/host/run
+  analyze:
+    image: llparse/git-analyze:0.4
+    command: -period 24h
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+      io.rancher.scheduler.affinity:host_label_soft: git.mirror=analyze
+    links:
+    - mirror
+    volumes:
+    - ${HOST_LOG_PATH}:/var/log/nginx
+  etcd:
+    image: rancher/etcd:v2.3.7-11
+    labels:
+      io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    environment:
+      RANCHER_DEBUG: '${DEBUG}'
+      EMBEDDED_BACKUPS: 'false'
+      ETCD_HEARTBEAT_INTERVAL: '${ETCD_HEARTBEAT_INTERVAL}'
+      ETCD_ELECTION_TIMEOUT: '${ETCD_ELECTION_TIMEOUT}'
+    volumes:
+    {{- if eq .Values.ETCD_STORAGE "persistent" }}
+    - etcd:/pdata
+    {{- else }}
+    - /pdata
+    {{- end }}
+volumes:
+  git-mirror:
+    driver: local
+    per_container: true
+    driver_opts: 
+      type: tmpfs
+      device: tmpfs
+      o: size=64M,nodev,nosuid
+  git-serve-run:
+    driver: local
+    per_container: true
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=4M,nodev,nosuid
+  {{- if eq .Values.ETCD_STORAGE "persistent" }}
+  etcd:
+    driver: local
+    per_container: true
+  {{- end }}
