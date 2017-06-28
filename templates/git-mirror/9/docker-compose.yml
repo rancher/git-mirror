@@ -1,7 +1,7 @@
 version: '2'
 services:
   mirror:
-    image: llparse/git-mirror:0.2
+    image: llparse/git-mirror:0.3
     environment:
       MIRROR_ETCD_ENDPOINTS: 'http://etcd:2379'
       MIRROR_DATA_DIR: /var/git
@@ -18,7 +18,7 @@ services:
     volumes:
     - git-mirror:/var/git
   serve:
-    image: llparse/git-serve:0.5
+    image: llparse/git-serve:0.6
     environment:
       SERVER_NAME: ${SERVER_NAME}
       WORKER_CONNECTIONS: ${WORKER_CONNECTIONS}
