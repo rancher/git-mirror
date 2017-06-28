@@ -70,7 +70,8 @@ func main() {
 		go client.watchEvents()
 		r.HandleFunc("/postreceive", client.PostReceiveHandler)
 	}
-	r.HandleFunc("/repos/{repo}/commits/{branch}", client.RepoCommitHandler)
+	r.HandleFunc("/repos/{repo}/commits", client.RepoRefHandler)
+	r.HandleFunc("/repos/{repo}/commits/{branch}", client.RepoBranchRefHandler)
 
 	go client.poll()
 	http.Handle("/", r)
@@ -147,7 +148,23 @@ func (c *client) getRepoByName(name string) (*repository, error) {
 	return nil, errors.New("Repo not being mirrored")
 }
 
-func (c *client) RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
+func (c *client) RepoRefHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	repoName := vars["repo"]
+
+	defer log.WithFields(log.Fields{
+		"Repo": repoName,
+	}).Debugf("RepoRefHandler")
+
+	if repo, err := c.getRepoByName(repoName); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	} else {
+		fmt.Fprintf(w, repo.getRefs())
+	}
+}
+
+func (c *client) RepoBranchRefHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	repoName := vars["repo"]
 	branch := vars["branch"]
@@ -157,20 +174,18 @@ func (c *client) RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
 		"Branch": branch,
 		"Hash":   oldHash,
 		"Repo":   repoName,
-	}).Debugf("RepoCommitHandler")
+	}).Debugf("RepoBranchRefHandler")
 
 	if repo, err := c.getRepoByName(repoName); err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, err.Error())
+	} else if currentHash, exists := repo.getHeadRef(branch); !exists {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Ref not found")
+	} else if oldHash == currentHash {
+		w.WriteHeader(http.StatusNotModified)
 	} else {
-		if currentHash, exists := repo.getHeadRef(branch); !exists {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Ref not found")
-		} else if oldHash == currentHash {
-			w.WriteHeader(http.StatusNotModified)
-		} else {
-			fmt.Fprintf(w, currentHash)
-		}
+		fmt.Fprintf(w, currentHash)
 	}
 }
 
