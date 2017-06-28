@@ -6,8 +6,12 @@ server {
  
   server_name {{getenv "SERVER_NAME"}};
  
- location = / {
+  location = / {
     index index.html;
+  }
+
+  location /repos {
+    proxy_pass http://127.0.0.1:4141;
   }
 
   location = /index.html {
@@ -23,7 +27,6 @@ server {
 
     stub_status;
   }
-
   location ~ /postreceive {
     proxy_pass http://127.0.0.1:4141;
   }
