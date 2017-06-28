@@ -10,6 +10,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/mux"
 	etcdclient "github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 )
@@ -63,14 +64,16 @@ func main() {
 	cfg := loadConfig()
 	client := newClient(cfg)
 
+	r := mux.NewRouter()
 	if client.kapi != nil {
 		log.Info("Starting HTTP server to receive GitHub events")
-		go func() {
-			http.Handle("/postreceive", client)
-			log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
-		}()
 		go client.watchEvents()
+		r.HandleFunc("/postreceive", client.PostReceiveHandler)
 	}
+	r.HandleFunc("/repos/{repo}/commits/{branch}", RepoCommitHandler)
+
+	http.Handle("/", r)
+	go log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
 
 	client.poll()
 }
@@ -145,7 +148,14 @@ func (c *client) getRepoByName(name string) (*repository, error) {
 	return nil, errors.New("Repo not being mirrored")
 }
 
-func (c *client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	repo := vars["repo"]
+	branch := vars["branch"]
+	log.Infof("ReoCommitHandler() repo=%s branch=%s", repo, branch)
+}
+
+func (c *client) PostReceiveHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)
