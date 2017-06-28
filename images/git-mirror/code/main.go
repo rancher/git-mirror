@@ -10,8 +10,8 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gorilla/mux"
 	etcdclient "github.com/coreos/etcd/client"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
 
@@ -70,7 +70,7 @@ func main() {
 		go client.watchEvents()
 		r.HandleFunc("/postreceive", client.PostReceiveHandler)
 	}
-	r.HandleFunc("/repos/{repo}/commits/{branch}", RepoCommitHandler)
+	r.HandleFunc("/repos/{repo}/commits/{branch}", client.RepoCommitHandler)
 
 	http.Handle("/", r)
 	go log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
@@ -148,14 +148,35 @@ func (c *client) getRepoByName(name string) (*repository, error) {
 	return nil, errors.New("Repo not being mirrored")
 }
 
-func RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
+func (c *client) RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	repo := vars["repo"]
+	repoName := vars["repo"]
 	branch := vars["branch"]
-	log.Infof("ReoCommitHandler() repo=%s branch=%s", repo, branch)
+	oldHash := r.Header.Get("If-None-Match")
+
+	defer log.WithFields(log.Fields{
+		"Branch": branch,
+		"Hash": oldHash,
+		"Repo": repoName,
+	}).Debugf("RepoCommitHandler")
+
+	if repo, err := c.getRepoByName(repoName); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	} else {
+		currentHash := repo.getHeadRef(branch)
+
+		if oldHash == currentHash {
+			w.WriteHeader(http.StatusNotModified)
+		} else {
+			fmt.Fprintf(w, currentHash)
+		}
+	}
 }
 
 func (c *client) PostReceiveHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug("PostReceiveHandler")
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)

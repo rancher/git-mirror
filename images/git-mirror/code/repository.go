@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +17,7 @@ type repository struct {
 	url       string
 	name      string
 	targetDir string
+	refs      map[string]string
 }
 
 func newRepository(url string, baseDir string) *repository {
@@ -22,6 +25,7 @@ func newRepository(url string, baseDir string) *repository {
 	r.url = url
 	r.name = r.nameFromURL()
 	r.targetDir = filepath.Join(baseDir, r.name)
+	r.refs = make(map[string]string)
 	r.mirror()
 	return &r
 }
@@ -43,6 +47,7 @@ func (r *repository) mirror() {
 	}
 
 	log.WithFields(log.Fields{"Repo": r.name}).Info("Cloned")
+	r.parsePackedRefs()
 }
 
 func (r *repository) fetch(reason string) {
@@ -57,6 +62,43 @@ func (r *repository) fetch(reason string) {
 	}
 
 	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Fetched")
+	r.parsePackedRefs()
+}
+
+func (r *repository) parsePackedRefs() {
+	packedRefPath := strings.Join([]string{r.targetDir, "packed-refs"}, "/")
+
+	var advance int
+	var token []byte
+	if data, err := ioutil.ReadFile(packedRefPath); err == nil {
+		for {
+			advance, token, err = bufio.ScanLines(data, false)
+			log.Infof("%d %s %+v", advance, string(token), err)
+			if advance == 0 {
+				break
+			}
+			data = data[advance:]
+			if err != nil {
+				log.Warn("Error scanning packed-refs: %+v", err)
+				break
+			}
+			line := string(token)
+			log.Infof("Line: %s", line)
+			if line[0:1] == "#" {
+				log.Debugf("Ignored comment: %s", line)
+				continue
+			}
+			r.refs[strings.Trim(line[40:], " ")] = line[:40]
+		}
+	} else {
+		log.Debugf("error scanning file: %s", err.Error())
+	}
+
+	log.WithFields(log.Fields{"Path": packedRefPath, "Repo": r.name}).Info("Parsed")
+}
+
+func (r *repository) getHeadRef(branch string) string {
+	return r.refs[strings.Join([]string{"refs/heads", branch}, "/")]
 }
 
 func pathExists(path string) bool {
