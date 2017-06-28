@@ -72,10 +72,9 @@ func main() {
 	}
 	r.HandleFunc("/repos/{repo}/commits/{branch}", client.RepoCommitHandler)
 
+	go client.poll()
 	http.Handle("/", r)
-	go log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
-
-	client.poll()
+	log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
 }
 
 func (c *client) poll() {
@@ -156,8 +155,8 @@ func (c *client) RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer log.WithFields(log.Fields{
 		"Branch": branch,
-		"Hash": oldHash,
-		"Repo": repoName,
+		"Hash":   oldHash,
+		"Repo":   repoName,
 	}).Debugf("RepoCommitHandler")
 
 	if repo, err := c.getRepoByName(repoName); err != nil {
