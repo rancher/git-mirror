@@ -11,6 +11,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	etcdclient "github.com/coreos/etcd/client"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
 
@@ -63,16 +64,18 @@ func main() {
 	cfg := loadConfig()
 	client := newClient(cfg)
 
+	r := mux.NewRouter()
 	if client.kapi != nil {
 		log.Info("Starting HTTP server to receive GitHub events")
-		go func() {
-			http.Handle("/postreceive", client)
-			log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
-		}()
 		go client.watchEvents()
+		r.HandleFunc("/postreceive", client.PostReceiveHandler)
 	}
+	r.HandleFunc("/repos/{repo}/commits", client.RepoRefHandler)
+	r.HandleFunc("/repos/{repo}/commits/{branch}", client.RepoBranchRefHandler)
 
-	client.poll()
+	go client.poll()
+	http.Handle("/", r)
+	log.Fatal(http.ListenAndServe(cfg.GithubListenAddress, nil))
 }
 
 func (c *client) poll() {
@@ -145,7 +148,50 @@ func (c *client) getRepoByName(name string) (*repository, error) {
 	return nil, errors.New("Repo not being mirrored")
 }
 
-func (c *client) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *client) RepoRefHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	repoName := vars["repo"]
+
+	defer log.WithFields(log.Fields{
+		"Repo": repoName,
+	}).Debugf("RepoRefHandler")
+
+	if repo, err := c.getRepoByName(repoName); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	} else {
+		fmt.Fprintf(w, repo.getRefs())
+	}
+}
+
+func (c *client) RepoBranchRefHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	repoName := vars["repo"]
+	branch := vars["branch"]
+	oldHash := r.Header.Get("If-None-Match")
+
+	defer log.WithFields(log.Fields{
+		"Branch": branch,
+		"Hash":   oldHash,
+		"Repo":   repoName,
+	}).Debugf("RepoBranchRefHandler")
+
+	if repo, err := c.getRepoByName(repoName); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	} else if currentHash, exists := repo.getHeadRef(branch); !exists {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Ref not found")
+	} else if oldHash == currentHash {
+		w.WriteHeader(http.StatusNotModified)
+	} else {
+		fmt.Fprintf(w, currentHash)
+	}
+}
+
+func (c *client) PostReceiveHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug("PostReceiveHandler")
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)
