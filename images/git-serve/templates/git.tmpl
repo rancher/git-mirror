@@ -14,7 +14,7 @@ server {
     index index.html;
   }
 
-  location /repos/ {
+  location ~ /repos {
     proxy_pass http://127.0.0.1:4141;
   }
 
