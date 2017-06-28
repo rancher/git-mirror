@@ -71,6 +71,7 @@ func (r *repository) parsePackedRefs() {
 	var advance int
 	var token []byte
 	if data, err := ioutil.ReadFile(packedRefPath); err == nil {
+		newRefs := make(map[string]string)
 		for {
 			advance, token, err = bufio.ScanLines(data, false)
 			if advance == 0 {
@@ -85,8 +86,9 @@ func (r *repository) parsePackedRefs() {
 			if line[0:1] == "#" {
 				continue
 			}
-			r.refs[strings.Trim(line[40:], " ")] = line[:40]
+			newRefs[strings.Trim(line[40:], " ")] = line[:40]
 		}
+		r.refs = newRefs
 	} else {
 		log.Debugf("error scanning file: %s", err.Error())
 	}
@@ -94,8 +96,9 @@ func (r *repository) parsePackedRefs() {
 	log.WithFields(log.Fields{"Path": packedRefPath, "Repo": r.name}).Debug("Parsed packed-refs")
 }
 
-func (r *repository) getHeadRef(branch string) string {
-	return r.refs[strings.Join([]string{"refs/heads", branch}, "/")]
+func (r *repository) getHeadRef(branch string) (string, bool) {
+	val, exists := r.refs[strings.Join([]string{"refs/heads", branch}, "/")]
+	return val, exists
 }
 
 func pathExists(path string) bool {

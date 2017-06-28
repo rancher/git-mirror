@@ -163,9 +163,10 @@ func (c *client) RepoCommitHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, err.Error())
 	} else {
-		currentHash := repo.getHeadRef(branch)
-
-		if oldHash == currentHash {
+		if currentHash, exists := repo.getHeadRef(branch); !exists {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "Ref not found")
+		} else if oldHash == currentHash {
 			w.WriteHeader(http.StatusNotModified)
 		} else {
 			fmt.Fprintf(w, currentHash)
