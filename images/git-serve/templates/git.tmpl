@@ -36,7 +36,7 @@ server {
   rewrite ^(/.*)\.git(/.*)$ $1$2;
 
   # strip the UUID
-  rewrite "^(/[^/]+)/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/.*)$" $1$2 last;
+  rewrite "^(/[^/]+)/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(/.*)$" $1$2 last;
 
   location ~ (/.*) {
     client_max_body_size                    0;
