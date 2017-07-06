@@ -168,7 +168,7 @@ func (c *client) RepoBranchRefHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	repoName := vars["repo"]
 	branch := vars["branch"]
-	oldHash := r.Header.Get("If-None-Match")
+	oldHash := strings.Trim(r.Header.Get("If-None-Match"), "\"")
 
 	defer log.WithFields(log.Fields{
 		"Branch": branch,
