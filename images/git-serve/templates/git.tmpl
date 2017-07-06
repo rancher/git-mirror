@@ -16,6 +16,8 @@ server {
 
   location ~ /repos {
     proxy_pass http://127.0.0.1:4141;
+    # go program should be able to more appropriately ship the metric
+    # proxy_pass_header X-Install-Uuid;
   }
 
   location ~ /postreceive {
