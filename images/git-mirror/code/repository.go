@@ -57,6 +57,7 @@ func (r *repository) fetch(reason string) {
 	r.Lock()
 	defer r.Unlock()
 	defer r.parsePackedRefs()
+	defer r.packRefs(reason)
 
 	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Fetching")
 	cmd := exec.Command("git", "-C", r.targetDir, "fetch", "-p", "origin")
@@ -66,6 +67,17 @@ func (r *repository) fetch(reason string) {
 	}
 
 	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Fetched")
+
+}
+
+func (r *repository) packRefs(reason string) {
+	cmd := exec.Command("git", "-C", r.targetDir, "pack-refs", "--all")
+
+	if err := cmd.Run(); err != nil {
+		log.Fatal("Error packing refs: " + err.Error())
+	}
+
+	log.WithFields(log.Fields{"Reason": reason, "Repo": r.name}).Debug("Packed refs")
 }
 
 func (r *repository) parsePackedRefs() {

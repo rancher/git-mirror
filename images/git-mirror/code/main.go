@@ -152,9 +152,9 @@ func (c *client) RepoRefHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	repoName := vars["repo"]
 
-	defer log.WithFields(log.Fields{
-		"Repo": repoName,
-	}).Debugf("RepoRefHandler")
+	// defer log.WithFields(log.Fields{
+	// 	"Repo": repoName,
+	// }).Debugf("RepoRefHandler")
 
 	if repo, err := c.getRepoByName(repoName); err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -170,11 +170,11 @@ func (c *client) RepoBranchRefHandler(w http.ResponseWriter, r *http.Request) {
 	branch := vars["branch"]
 	oldHash := strings.Trim(r.Header.Get("If-None-Match"), "\"")
 
-	defer log.WithFields(log.Fields{
-		"Branch": branch,
-		"Hash":   oldHash,
-		"Repo":   repoName,
-	}).Debugf("RepoBranchRefHandler")
+	// defer log.WithFields(log.Fields{
+	// 	"Branch": branch,
+	// 	"Hash":   oldHash,
+	// 	"Repo":   repoName,
+	// }).Debugf("RepoBranchRefHandler")
 
 	if repo, err := c.getRepoByName(repoName); err != nil {
 		w.WriteHeader(http.StatusNotFound)
