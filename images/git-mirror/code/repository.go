@@ -37,6 +37,7 @@ func (r *repository) mirror() {
 	r.Lock()
 	defer r.Unlock()
 	defer r.parsePackedRefs()
+	// no need to pack refs, they already are packed
 
 	if pathExists(r.targetDir) {
 		log.WithFields(log.Fields{"Repo": r.name}).Info("Already exists")
@@ -99,13 +100,18 @@ func (r *repository) parsePackedRefs() {
 				break
 			}
 			line := string(token)
-			if line[0:1] == "#" {
+			// Ignore comments and re-tagged tags
+			if line[0:1] == "#" || line[0:1] == "^" {
 				continue
 			}
 			ref := strings.Trim(line[40:], " ")
 			hash := line[:40]
-			newRefs[ref] = hash
-			keys = append(keys, ref)
+
+			// We only care about heads (branches)
+			if strings.HasPrefix(ref, "refs/heads") {
+				newRefs[ref] = hash
+				keys = append(keys, ref)
+			}
 		}
 		sort.Strings(keys)
 
