@@ -2,7 +2,7 @@
   rotate 365
   daily
   postrotate
-    [ ! -f /run/nginx.pid ] || kill -USR1 `cat /run/nginx.pid`
+    kill -USR1 $(pgrep 'nginx: master')
   endscript
   nocompress
 }
