@@ -8,4 +8,4 @@ service fcgiwrap start
 service nginx start
 
 # Send error logs to stdout
-tail -f /var/log/nginx/error.log
+tail -f /var/log/nginx/error-${MY_POD_NAME}.log
