@@ -8,11 +8,6 @@ Mirror a set of Git repositories. This can be useful for a variety of reasons:
 
 # Deployment Options
 
-## Manual
-
-On a host with Docker installed and port `80` open, execute the [run](images/run) script.
-
 ## Rancher
 
-A template is provided for running on Rancher. Add this repository as a Rancher Catalog to use it.
-
+A template is provided for running on Rancher. Add the github.com/rancher/eio-charts repository as a Rancher Catalog to use it.
