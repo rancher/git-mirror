@@ -1,0 +1,5 @@
+[template]
+src = "rotate_crontab.tmpl"
+dest = "/etc/periodic/daily/rotate_crontab"
+mode = "0755"
+keys = []

@@ -1,23 +1,8 @@
 #!/bin/bash -e
 
-ACCT=${ACCT:-llparse}
-VERSION=${VERSION:-0.3}
+ACCT=${1:-drpebcak}
+NAME=${2:-git-mirror}
+VERSION=${3:-0.4}
 
-NAME=git-mirror
-APP_PATH=github.com/$ACCT/$NAME
-
-docker build -t git-mirror-golang -f Dockerfile.build .
-
-APP_PATH="github.com/llparse/git-mirror"
-
-docker run \
-  --rm \
-  -v ${PWD}/code:/usr/src/${APP_PATH} \
-  -w /usr/src/${APP_PATH} \
-    git-mirror-golang \
-      go build
-
-docker build -t $ACCT/git-mirror:$VERSION .
-docker push $ACCT/git-mirror:$VERSION
-
-rm -f code/git-mirror
+docker build -t $ACCT/$NAME:$VERSION .
+docker push $ACCT/$NAME:$VERSION

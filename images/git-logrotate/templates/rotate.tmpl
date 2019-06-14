@@ -1,8 +1,8 @@
-"/log/access-{{getenv "RANCHER_SERVICE_INDEX"}}.log" /log/error-{{getenv "RANCHER_SERVICE_INDEX"}}.log {
+"/var/log/nginx/access-{{getenv "MY_POD_NAME"}}.log" /var/log/nginx/error-{{getenv "MY_POD_NAME"}}.log {
   rotate 365
   daily
   postrotate
-    [ ! -f /host/run/nginx.pid ] || kill -USR1 `cat /host/run/nginx.pid`
+    [ ! -f /run/nginx.pid ] || kill -USR1 `cat /run/nginx.pid`
   endscript
   nocompress
 }
