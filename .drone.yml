@@ -12,7 +12,7 @@ steps:
   settings:
     context: images/git-analyze/
     custom_dns: 1.1.1.1
-    dockerfile: git-analyze/Dockerfile
+    dockerfile: images/git-analyze/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
@@ -29,7 +29,7 @@ steps:
   settings:
     context: images/git-logrotate/
     custom_dns: 1.1.1.1
-    dockerfile: git-logrotate/Dockerfile
+    dockerfile: images/git-logrotate/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
@@ -46,7 +46,7 @@ steps:
   settings:
     context: images/git-mirror/
     custom_dns: 1.1.1.1
-    dockerfile: git-mirror/Dockerfile
+    dockerfile: images/git-mirror/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
@@ -63,7 +63,7 @@ steps:
   settings:
     context: images/git-serve/
     custom_dns: 1.1.1.1
-    dockerfile: git-serve/Dockerfile
+    dockerfile: images/git-serve/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
@@ -89,7 +89,7 @@ steps:
   settings:
     context: images/git-analyze/
     custom_dns: 1.1.1.1
-    dockerfile: git-analyze/Dockerfile
+    dockerfile: images/git-analyze/Dockerfile
     password:
       from_secret: docker_password
     repo: rancher/git-analyze
@@ -105,7 +105,7 @@ steps:
   settings:
     context: images/git-logrotate/
     custom_dns: 1.1.1.1
-    dockerfile: git-logrotate/Dockerfile
+    dockerfile: images/git-logrotate/Dockerfile
     password:
       from_secret: docker_password
     repo: rancher/git-logrotate
@@ -121,7 +121,7 @@ steps:
   settings:
     context: images/git-mirror/
     custom_dns: 1.1.1.1
-    dockerfile: git-mirror/Dockerfile
+    dockerfile: images/git-mirror/Dockerfile
     password:
       from_secret: docker_password
     repo: rancher/git-mirror
@@ -137,7 +137,7 @@ steps:
   settings:
     context: images/git-serve/
     custom_dns: 1.1.1.1
-    dockerfile: git-serve/Dockerfile
+    dockerfile: images/git-serve/Dockerfile
     password:
       from_secret: docker_password
     repo: rancher/git-serve
