@@ -2,5 +2,5 @@
 src = "rotate.tmpl"
 dest = "/rotate.cfg"
 keys = [
-  "RANCHER_SERVICE_INDEX"
+  "MY_POD_NAME"
 ]

@@ -2,6 +2,6 @@
 src = "nginx.tmpl"
 dest = "/etc/nginx/nginx.conf"
 keys = [
-  "RANCHER_SERVICE_INDEX",
+  "MY_POD_NAME",
   "WORKER_CONNECTIONS"
 ]

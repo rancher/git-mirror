@@ -1,23 +1,5 @@
 #!/bin/bash
 
-export WORKER_CONNECTIONS=${WORKER_CONNECTIONS:-4096}
-export SERVER_NAME=${SERVER_NAME:-git.rancher.io}
-
-load_service_index() {
-  local meta_url="http://169.254.169.250/2016-07-29"
-  local service_index=$(curl -s $meta_url/self/container/service_index)
-
-  # wait for metadata to wake up
-  while [ "$service_index" == "" ]; do
-    sleep 1
-    service_index=$(curl -s $meta_url/self/container/service_index)
-  done
-
-  export RANCHER_SERVICE_INDEX="$service_index"
-}
-
-load_service_index
-
 # Generate nginx/site configuration
 confd -onetime -backend env
 
@@ -26,4 +8,4 @@ service fcgiwrap start
 service nginx start
 
 # Send error logs to stdout
-tail -f /var/log/nginx/error.log
+tail -f /var/log/nginx/error-${MY_POD_NAME}.log

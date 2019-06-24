@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	etcdclient "github.com/coreos/etcd/client"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
