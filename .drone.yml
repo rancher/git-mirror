@@ -10,7 +10,7 @@ steps:
 - name: docker-publish-analyze
   image: plugins/docker
   settings:
-    context: git-analyze/
+    context: images/git-analyze/
     custom_dns: 1.1.1.1
     dockerfile: git-analyze/Dockerfile
     dry_run: true
@@ -27,7 +27,7 @@ steps:
 - name: docker-publish-logrotate
   image: plugins/docker
   settings:
-    context: git-logrotate/
+    context: images/git-logrotate/
     custom_dns: 1.1.1.1
     dockerfile: git-logrotate/Dockerfile
     dry_run: true
@@ -44,7 +44,7 @@ steps:
 - name: docker-publish-mirror
   image: plugins/docker
   settings:
-    context: git-mirror/
+    context: images/git-mirror/
     custom_dns: 1.1.1.1
     dockerfile: git-mirror/Dockerfile
     dry_run: true
@@ -61,7 +61,7 @@ steps:
 - name: docker-publish-serve
   image: plugins/docker
   settings:
-    context: git-serve/
+    context: images/git-serve/
     custom_dns: 1.1.1.1
     dockerfile: git-serve/Dockerfile
     dry_run: true
@@ -87,7 +87,7 @@ steps:
 - name: docker-publish-analyze
   image: plugins/docker
   settings:
-    context: git-analyze/
+    context: images/git-analyze/
     custom_dns: 1.1.1.1
     dockerfile: git-analyze/Dockerfile
     password:
@@ -103,7 +103,7 @@ steps:
 - name: docker-publish-logrotate
   image: plugins/docker
   settings:
-    context: git-logrotate/
+    context: images/git-logrotate/
     custom_dns: 1.1.1.1
     dockerfile: git-logrotate/Dockerfile
     password:
@@ -119,7 +119,7 @@ steps:
 - name: docker-publish-mirror
   image: plugins/docker
   settings:
-    context: git-mirror/
+    context: images/git-mirror/
     custom_dns: 1.1.1.1
     dockerfile: git-mirror/Dockerfile
     password:
@@ -135,7 +135,7 @@ steps:
 - name: docker-publish-serve
   image: plugins/docker
   settings:
-    context: git-serve/
+    context: images/git-serve/
     custom_dns: 1.1.1.1
     dockerfile: git-serve/Dockerfile
     password:
