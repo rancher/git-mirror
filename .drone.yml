@@ -1,0 +1,149 @@
+---
+kind: pipeline
+name: ci
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker-publish-analyze
+  image: plugins/docker
+  settings:
+    context: git-analyze/
+    custom_dns: 1.1.1.1
+    dockerfile: git-analyze/Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: rancher/git-analyze
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - pull_request
+
+- name: docker-publish-logrotate
+  image: plugins/docker
+  settings:
+    context: git-logrotate/
+    custom_dns: 1.1.1.1
+    dockerfile: git-logrotate/Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: rancher/git-logrotate
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - pull_request
+
+- name: docker-publish-mirror
+  image: plugins/docker
+  settings:
+    context: git-mirror/
+    custom_dns: 1.1.1.1
+    dockerfile: git-mirror/Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - pull_request
+
+- name: docker-publish-serve
+  image: plugins/docker
+  settings:
+    context: git-serve/
+    custom_dns: 1.1.1.1
+    dockerfile: git-serve/Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: rancher/git-serve
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - pull_request
+
+---
+kind: pipeline
+name: publish
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker-publish-analyze
+  image: plugins/docker
+  settings:
+    context: git-analyze/
+    custom_dns: 1.1.1.1
+    dockerfile: git-analyze/Dockerfile
+    password:
+      from_secret: docker_password
+    repo: rancher/git-analyze
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - tag
+
+- name: docker-publish-logrotate
+  image: plugins/docker
+  settings:
+    context: git-logrotate/
+    custom_dns: 1.1.1.1
+    dockerfile: git-logrotate/Dockerfile
+    password:
+      from_secret: docker_password
+    repo: rancher/git-logrotate
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - tag
+
+- name: docker-publish-mirror
+  image: plugins/docker
+  settings:
+    context: git-mirror/
+    custom_dns: 1.1.1.1
+    dockerfile: git-mirror/Dockerfile
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - tag
+
+- name: docker-publish-serve
+  image: plugins/docker
+  settings:
+    context: git-serve/
+    custom_dns: 1.1.1.1
+    dockerfile: git-serve/Dockerfile
+    password:
+      from_secret: docker_password
+    repo: rancher/git-serve
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - tag
