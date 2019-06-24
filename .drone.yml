@@ -17,7 +17,7 @@ steps:
     password:
       from_secret: docker_password
     repo: rancher/git-analyze
-    tag: "${DRONE_TAG}"
+    tag: "ci"
     username:
       from_secret: docker_username
   when:
@@ -34,7 +34,7 @@ steps:
     password:
       from_secret: docker_password
     repo: rancher/git-logrotate
-    tag: "${DRONE_TAG}"
+    tag: "ci"
     username:
       from_secret: docker_username
   when:
@@ -51,7 +51,7 @@ steps:
     password:
       from_secret: docker_password
     repo: rancher/git-mirror
-    tag: "${DRONE_TAG}"
+    tag: "ci"
     username:
       from_secret: docker_username
   when:
@@ -68,7 +68,7 @@ steps:
     password:
       from_secret: docker_password
     repo: rancher/git-serve
-    tag: "${DRONE_TAG}"
+    tag: "ci"
     username:
       from_secret: docker_username
   when:
