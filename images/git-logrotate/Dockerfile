@@ -1,5 +1,7 @@
 FROM alpine:3.5
 
+RUN addgroup -g 40000 rancher
+
 RUN apk add --update --no-cache logrotate curl bash tini
 
 RUN \
