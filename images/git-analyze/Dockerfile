@@ -1,4 +1,4 @@
-FROM golang:1.7-alpine AS builder
+FROM golang:1.13-alpine AS builder
 
 RUN apk add --update --no-cache git
 RUN go get github.com/sirupsen/logrus

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ACCT=${1:-drpebcak}
+ACCT=${1:-paraglade}
 NAME=${2:-git-serve}
-VERSION=${3:-0.6}
+VERSION=${3:-0.8}
 
 docker build -t $ACCT/$NAME:$VERSION .
 docker push $ACCT/$NAME:$VERSION
