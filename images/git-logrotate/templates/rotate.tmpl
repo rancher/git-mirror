@@ -1,9 +1,14 @@
-"/var/log/nginx/access-{{getenv "MY_POD_NAME"}}.log" /var/log/nginx/error-{{getenv "MY_POD_NAME"}}.log {
+/var/log/nginx/access-{{getenv "MY_POD_NAME"}}.log
+/var/log/nginx/error-{{getenv "MY_POD_NAME"}}.log
+{
   su root rancher
   rotate 365
   daily
+  missingok
+  notifempty
+  delaycompress
+  compress
   postrotate
     kill -USR1 $(pgrep 'nginx: master')
   endscript
-  nocompress
 }
