@@ -50,15 +50,18 @@ http {
             '"time": "$time_local",'
             '"http_host": "$http_host",'
             '"remote_addr": "$remote_addr",'
-            '"http_x_forwarded_for": "$http_x_forwarded_for",'
-            '"request": "$request",'
+            '"ip": "$http_x_forwarded_for",'
+            '"protocol": "$server_protocol",'
+            '"uri_query": "$query_string",'
+            '"path": "$uri",'
+            '"http_method": "$request_method",'
             '"status": "$status",'
             '"body_bytes_sent": "$body_bytes_sent",'
             '"http_referrer": "$http_referer",'
             '"http_user_agent": "$http_user_agent",'
             '"request_time": "$request_time",'
             '"upstream_response_time": "$upstream_response_time",'
-            '"http_x_install_uuid": "$http_x_install_uuid"'
+            '"uid": "$http_x_install_uuid"'
           '}';
 
         access_log /dev/stdout json_combined;
