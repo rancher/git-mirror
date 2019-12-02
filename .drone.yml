@@ -78,7 +78,7 @@ steps:
 - name: docker-publish-fluentd-geoip
   image: plugins/docker
   settings:
-    context: images/fluentd/
+    context: images/fluentd-geoip/
     custom_dns: 1.1.1.1
     dockerfile: images/fluentd/Dockerfile
     dry_run: true
