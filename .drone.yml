@@ -78,13 +78,13 @@ steps:
 - name: docker-publish-fluentd-geoip
   image: plugins/docker
   settings:
-    context: images/fluentd-geoip/
+    context: images/fluentd/
     custom_dns: 1.1.1.1
     dockerfile: images/fluentd/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
-    repo: rancher/git-mirror
+    repo: rancher/fluentd-geoip
     tag: "ci"
     username:
       from_secret: docker_username
@@ -152,12 +152,12 @@ steps:
 - name: docker-publish-fluentd-geoip
   image: plugins/docker
   settings:
-    context: images/fluentd-geoip/
+    context: images/fluentd/
     custom_dns: 1.1.1.1
     dockerfile: images/fluentd/Dockerfile
     password:
       from_secret: docker_password
-    repo: rancher/git-mirror
+    repo: rancher/fluentd-geoip
     tag: "${DRONE_TAG}"
     username:
       from_secret: docker_username
