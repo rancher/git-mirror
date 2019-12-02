@@ -17,7 +17,4 @@ ulimit -n 200000
 # Turn up services
 echo 'FCGI_CHILDREN="5"' >> /etc/default/fcgiwrap
 service fcgiwrap start
-service nginx start
-
-# Send error logs to stdout
-tail -f /var/log/nginx/error-${MY_POD_NAME}.log
+nginx

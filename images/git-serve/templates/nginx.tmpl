@@ -1,6 +1,7 @@
 user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
+daemon off;
 
 events {
         use                     epoll;
@@ -38,11 +39,33 @@ http {
         # Logging Settings
         ##
 
-        log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for '
-                        '"$request" $status $body_bytes_sent "$http_referer" '
-                        '"$http_user_agent" $request_time $upstream_response_time "$http_x_install_uuid"';
-        access_log /var/log/nginx/access-{{getenv "MY_POD_NAME"}}.log main buffer=64k flush=1m;
-        error_log /var/log/nginx/error-{{getenv "MY_POD_NAME"}}.log;
+        #log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for '
+        #                '"$request" $status $body_bytes_sent "$http_referer" '
+        #                '"$http_user_agent" $request_time $upstream_response_time "$http_x_install_uuid"';
+        #access_log /var/log/nginx/access-{{getenv "MY_POD_NAME"}}.log main buffer=64k flush=1m;
+        #error_log /var/log/nginx/error-{{getenv "MY_POD_NAME"}}.log;
+
+        log_format json_combined
+          '{'
+            '"time": "$time_local",'
+            '"http_host": "$http_host",'
+            '"remote_addr": "$remote_addr",'
+            '"ip": "$http_x_forwarded_for",'
+            '"protocol": "$server_protocol",'
+            '"uri_query": "$query_string",'
+            '"path": "$uri",'
+            '"http_method": "$request_method",'
+            '"status": "$status",'
+            '"body_bytes_sent": "$body_bytes_sent",'
+            '"http_referrer": "$http_referer",'
+            '"http_user_agent": "$http_user_agent",'
+            '"request_time": "$request_time",'
+            '"upstream_response_time": "$upstream_response_time",'
+            '"uid": "$http_x_install_uuid"'
+          '}';
+
+        access_log /dev/stdout json_combined;
+        error_log /dev/stderr;
 
         ##
         # Gzip Settings
