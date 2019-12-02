@@ -75,6 +75,23 @@ steps:
     event:
     - pull_request
 
+- name: docker-publish-fluentd-geoip
+  image: plugins/docker
+  settings:
+    context: images/fluentd/
+    custom_dns: 1.1.1.1
+    dockerfile: images/fluentd/Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tag: "ci"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - pull_request
+
 ---
 kind: pipeline
 name: publish
@@ -122,6 +139,22 @@ steps:
     context: images/git-mirror/
     custom_dns: 1.1.1.1
     dockerfile: images/git-mirror/Dockerfile
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tag: "${DRONE_TAG}"
+    username:
+      from_secret: docker_username
+  when:
+    event:
+    - tag
+
+- name: docker-publish-fluentd-geoip
+  image: plugins/docker
+  settings:
+    context: images/fluentd-geoip/
+    custom_dns: 1.1.1.1
+    dockerfile: images/fluentd/Dockerfile
     password:
       from_secret: docker_password
     repo: rancher/git-mirror
