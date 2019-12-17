@@ -8,4 +8,3 @@ echo "build docker image version: ${VERSION}"
 docker build -t $ACCT/$NAME:$VERSION .
 docker push $ACCT/$NAME:$VERSION
 echo "pushed docker image version: ${VERSION}"
-
