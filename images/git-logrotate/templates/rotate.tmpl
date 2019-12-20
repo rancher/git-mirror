@@ -1,8 +1,11 @@
-/var/log/nginx/catalog/access*.log
+{{getenv "CATALOG_FILEPATH"}}
 {
   su root rancher
   rotate 1
   daily
   missingok
   notifempty
+  lastaction
+    /usr/bin/find {{getenv "CATALOG_FILEPATH"}}* -mtime +1 -delete
+  endscript
 }
