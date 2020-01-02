@@ -1,8 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
 
-ACCT=${1:-drpebcak}
+ACCT=${1:-paraglade}
 NAME=${2:-git-logrotate}
-VERS=${3:-0.1}
+VERSION=${3:-v$(date +%y%m%d%H%M%S)}
 
-docker build -t $ACCT/$NAME:$VERS .
-docker push $ACCT/$NAME:$VERS
+echo "build docker image version: ${VERSION}"
+docker build -t $ACCT/$NAME:$VERSION .
+docker push $ACCT/$NAME:$VERSION
+echo "pushed docker image version: ${VERSION}"
+
