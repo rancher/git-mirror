@@ -1,7 +1,0 @@
-storagedir: /var/git
-serveraddress: :4141
-pollinterval: 5m
-repositories:
-- https://github.com/rancher/infra-catalog
-- https://github.com/rancher/rancher-catalog
-- https://github.com/rancher/community-catalog
