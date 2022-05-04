@@ -41,23 +41,6 @@ steps:
     event:
     - pull_request
 
-- name: docker-publish-mirror
-  image: plugins/docker
-  settings:
-    context: images/git-mirror/
-    custom_dns: 1.1.1.1
-    dockerfile: images/git-mirror/Dockerfile
-    dry_run: true
-    password:
-      from_secret: docker_password
-    repo: rancher/git-mirror
-    tag: "ci"
-    username:
-      from_secret: docker_username
-  when:
-    event:
-    - pull_request
-
 - name: docker-publish-serve
   image: plugins/docker
   settings:
