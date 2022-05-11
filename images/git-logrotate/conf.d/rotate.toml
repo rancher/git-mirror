@@ -2,6 +2,6 @@
 src = "rotate.tmpl"
 dest = "/rotate.cfg"
 keys = [
-  "MY_POD_NAME",
+  "ROTATE_POD_NAME",
   "CATALOG_FILEPATH"
 ]

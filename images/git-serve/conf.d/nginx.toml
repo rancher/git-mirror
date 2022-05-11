@@ -2,6 +2,6 @@
 src = "nginx.tmpl"
 dest = "/etc/nginx/nginx.conf"
 keys = [
-  "MY_POD_NAME",
+  "SERVE_POD_NAME",
   "WORKER_CONNECTIONS"
 ]
