@@ -1,8 +1,0 @@
-#!/bin/bash -e
-
-ACCT=${1:-drpebcak}
-NAME=${2:-git-analyze}
-VERSION=${3:-0.4}
-
-docker build -t $ACCT/$NAME:$VERSION .
-docker push $ACCT/$NAME:$VERSION
