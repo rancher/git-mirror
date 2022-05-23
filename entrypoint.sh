@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Generate nginx/site configuration
-confd -onetime -backend env
-
 echo "fs.file-max = 12000500" >> /etc/sysctl.conf
 echo "fs.nr_open = 20000500" >> /etc/sysctl.conf
 echo "net.core.somaxconn = 512" >> /etc/sysctl.conf
@@ -18,3 +15,4 @@ ulimit -n 200000
 echo 'FCGI_CHILDREN="5"' >> /etc/default/fcgiwrap
 service fcgiwrap start
 nginx
+
