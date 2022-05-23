@@ -1,7 +1,0 @@
-[template]
-src = "nginx.tmpl"
-dest = "/etc/nginx/nginx.conf"
-keys = [
-  "SERVE_POD_NAME",
-  "WORKER_CONNECTIONS"
-]

@@ -1,4 +1,0 @@
-[template]
-src = "index.tmpl"
-dest = "/var/git/index.html"
-keys = []
