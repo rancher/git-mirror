@@ -6,23 +6,23 @@ Mirror git repositories.
 
 ```mermaid
 flowchart LR
-  git
+  git-sync
   shared-storage[(efs)]
-  nginx
+  git-porter
   rancher
   etl %% extract, transform, load
   grafana
 
-  git -. write .-> shared-storage
-  nginx -. read .-> shared-storage
-  rancher -. read .-> nginx
-  nginx -. fluentd protocol .-> etl
+  git-sync -. write .-> shared-storage
+  git-porter -. read .-> shared-storage
+  rancher -. read .-> git-porter
+  git-sync -. fluentd protocol .-> etl
   archive --> shared-storage
   enrich -. influx .-> grafana
 
   subgraph chart %% currently git-mirror
-    git
-    nginx
+    git-sync
+    git-porter
   end
 
   %% log aggregation
