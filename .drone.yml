@@ -1,50 +1,48 @@
 ---
 kind: pipeline
-name: build
+name: docker
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: docker-publish-porter
+- name: porter-dry-run
   image: plugins/docker
   settings:
-    context: .
-    custom_dns: 1.1.1.1
-    dockerfile: Dockerfile
-    dry_run: true
+    username:
+      from_secret: docker_username
     password:
       from_secret: docker_password
     repo: rancher/git-porter
     tag: "latest"
-    username:
-      from_secret: docker_username
+    dry_run: true
   when:
     event:
     - pull_request
 
----
-kind: pipeline
-name: publish
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: docker-publish-porter
+- name: porter-latest
   image: plugins/docker
   settings:
-    context: .
-    custom_dns: 1.1.1.1
-    dockerfile: Dockerfile
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: rancher/drone-fossa
+    tags: latest
+  when:
+    event:
+      - push
+
+- name: porter-release
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
     password:
       from_secret: docker_password
     repo: rancher/git-porter
     tag: "${DRONE_TAG}"
-    username:
-      from_secret: docker_username
   when:
     event:
     - tag
