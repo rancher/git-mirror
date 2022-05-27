@@ -1,0 +1,54 @@
+{{- range $key, $value := .Values.sync.repositories }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $value.name }}
+  labels:
+    {{- include "git-mirror.labels" $ | nindent 4 }}
+spec:
+  {{- if not $.Values.autoscaling.enabled }}
+  replicas: {{ $.Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "git-mirror.selectorLabels" $ | nindent 6 }}
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml $ | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "git-mirror.selectorLabels" $ | nindent 8 }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml $ | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "git-mirror.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: git-sync
+          env:
+            - name: GIT_SYNC_REPO
+              value: {{ $value.url }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.sync.image.repository }}:{{ $.Values.sync.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: "{{ $.Values.sync.image.pullPolicy }}"
+          volumeMounts:
+          - mountPath: "{{ $.Values.sync.path }}"
+            name: git-data
+        - name: git-porter
+          image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: "/var/git"
+            name: git-dir
+{{- end }}

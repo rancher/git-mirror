@@ -1,0 +1,168 @@
+---
+apiVersion: v1
+data:
+  git.conf: |-
+    server {
+      listen 80;
+      listen [::]:80;
+
+      root /var/git;
+      server_name {{ .Values.porter.url }}
+
+      location = / {
+        index index.html;
+      }
+
+      location = /index.html {
+        index index.html;
+      }
+
+      location ~ /repos {
+        proxy_pass http://127.0.0.1:4141;
+        # go program should be able to more appropriately ship the metric
+        # proxy_pass_header X-Install-Uuid;
+      }
+
+      location ~ /postreceive {
+        proxy_pass http://127.0.0.1:4141;
+      }
+
+      location ^~ /nginx_status {
+        satisfy any;
+
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
+
+        stub_status;
+      }
+
+      # strip the .git
+      rewrite ^(/.*)\.git(/.*)$ $1$2;
+
+      # strip the UUID
+      rewrite "^(/[^/]+)/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(/.*)$" $1$2 last;
+
+      location ~ (/.*) {
+        client_max_body_size                    0;
+
+        fastcgi_param   SCRIPT_FILENAME         /usr/lib/git-core/git-http-backend;
+        include         fastcgi_params;
+        fastcgi_param   GIT_HTTP_EXPORT_ALL     "";
+        fastcgi_param   GIT_PROJECT_ROOT        /var/git;
+        fastcgi_param   PATH_INFO               $1;
+
+        # Forward REMOTE_USER as we want to know when we are authenticated
+        fastcgi_param   REMOTE_USER             $remote_user;
+        fastcgi_pass    unix:/var/run/fcgiwrap.socket;
+      }
+    }
+  nginx.conf: |-
+    user www-data;
+    worker_processes auto;
+    pid /run/nginx.pid;
+    daemon off;
+
+    events {
+            use                     epoll;
+            worker_connections      {{ .Values.porter.workerConnections }};
+            multi_accept            on;
+    }
+
+    http {
+
+            ##
+            # Basic Settings
+            ##
+
+            sendfile on;
+            tcp_nopush on;
+            tcp_nodelay on;
+            keepalive_timeout 65;
+            types_hash_max_size 2048;
+            # server_tokens off;
+
+            # server_names_hash_bucket_size 64;
+            # server_name_in_redirect off;
+
+            include /etc/nginx/mime.types;
+            default_type application/octet-stream;
+
+            ##
+            # SSL Settings
+            ##
+
+            ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+            ssl_prefer_server_ciphers on;
+
+            ##
+            # Logging Settings
+            ##
+
+            log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for '
+                            '"$request" $status $body_bytes_sent "$http_referer" '
+                            '"$http_user_agent" $request_time $upstream_response_time "$http_x_install_uuid"';
+            #access_log /var/log/nginx/access-SERVE_POD_NAME.log main buffer=64k flush=1m;
+            #error_log /var/log/nginx/error-SERVE_POD_NAME.log;
+
+            #log_format json_combined
+            #  '{'
+            #    '"time": "$time_local",'
+            #    '"http_host": "$http_host",'
+            #    '"remote_addr": "$remote_addr",'
+            #    '"ip": "$http_x_forwarded_for",'
+            #    '"protocol": "$server_protocol",'
+            #    '"uri_query": "$query_string",'
+            #    '"path": "$uri",'
+            #    '"http_method": "$request_method",'
+            #    '"status": "$status",'
+            #    '"body_bytes_sent": "$body_bytes_sent",'
+            #    '"http_referrer": "$http_referer",'
+            #    '"http_user_agent": "$http_user_agent",'
+            #    '"request_time": "$request_time",'
+            #    '"upstream_response_time": "$upstream_response_time",'
+            #    '"uid": "$http_x_install_uuid"'
+            #  '}';
+
+            access_log /dev/stdout main;
+            error_log /dev/stderr;
+
+            ##
+            # Gzip Settings
+            ##
+
+            gzip on;
+            gzip_disable "msie6";
+
+            # gzip_vary on;
+            # gzip_proxied any;
+            # gzip_comp_level 6;
+            # gzip_buffers 16 8k;
+            # gzip_http_version 1.1;
+            # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+            ##
+            # Virtual Host Configs
+            ##
+
+            include /etc/nginx/conf.d/*.conf;
+            include /etc/nginx/sites-enabled/git.conf;
+    }
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2022-05-27T18:21:56Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:git.conf: {}
+        f:nginx.conf: {}
+    manager: rancher
+    operation: Update
+    time: "2022-05-27T18:21:56Z"
+  name: git-porter
+  namespace: git-mirror-testing
+  resourceVersion: "22253792"
+  uid: 791b1c19-43ba-4b1c-98bd-c9e31a690827

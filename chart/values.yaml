@@ -1,0 +1,94 @@
+# Default values for git-mirror.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+ 
+sync:
+  image:
+    repository: rancher/mirrored-git-sync
+    tag: "v3.5.0"
+    pullPolicy: IfNotPresent
+  path: "/tmp/git"
+  repositories:
+    - name: rancher-catalog
+      url: https://github.com/rancher/rancher-catalog
+    - name: community-catalog
+      url: https://github.com/rancher/community-catalog
+    - name: infra-catalog 
+      url: https://github.com/rancher/infra-catalog
+    - name: rancher-charts
+      url: https://github.com/rancher/charts
+    - name: system-charts
+      url: https://github.com/rancher/system-charts
+    - name: helm3-charts
+      url: https://github.com/rancher/helm3-charts
+    - name: partner-charts
+      url: https://github.com/rancher/partner-charts
+    - name: rke2-charts
+      url: https://github.com/rancher/rke2-charts
+
+porter:
+  url: git.rancher.io
+  workerConnections: 4096
+  image:
+    repository: rancher/git-porter
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: true
+    className: ""
+    hosts:
+      - host: git.rancher.io
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+     - secretName: git-rancher-io-tls
+       hosts:
+         - git.rancher.io
+
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+podAnnotations: {}
+
+tolerations: []
+
+affinity: {}
+
+persistence:
+  enabled: false
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+ 
