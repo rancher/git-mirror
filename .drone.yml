@@ -47,3 +47,32 @@ steps:
     event:
     - tag
 
+---
+kind: pipeline
+name: helm
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: lint
+  image: alpine:latest
+  commands:
+    - echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+    - apk update && apk add helm
+    - helm lint chart
+  when:
+    event:
+      - pull_request
+
+- name: template
+  image: alpine:latest
+  commands:
+    - echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+    - apk update && apk add helm
+    - helm template git-mirror chart
+  when:
+    event:
+      - pull_request
+
