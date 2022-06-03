@@ -51,4 +51,11 @@ spec:
           volumeMounts:
           - mountPath: "/var/git"
             name: git-dir
+      volumes:
+        - name: git-dir
+          emptyDir:
+            medium: Memory
+        - name: git-data
+          emptyDir:
+            medium: Memory
 {{- end }}
