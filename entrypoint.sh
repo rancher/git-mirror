@@ -15,4 +15,4 @@ ulimit -n 200000
 echo 'FCGI_CHILDREN="5"' >> /etc/default/fcgiwrap
 service fcgiwrap start
 nginx
-
+tail -f /var/log/nginx/access.log
