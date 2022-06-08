@@ -7,7 +7,7 @@ data:
       listen [::]:80;
 
       root /var/git;
-      server_name {{ .Values.porter.url }}
+      server_name {{ .Values.porter.url }};
 
       location = / {
         index index.html;
