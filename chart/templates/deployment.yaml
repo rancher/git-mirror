@@ -51,6 +51,14 @@ spec:
           volumeMounts:
           - mountPath: "/var/git"
             name: git-dir
+          - mountPath: "/etc/nginx/nginx.conf"
+            name: git-porter
+            readOnly: true
+            subPath: "nginx.conf"
+          - mountPath: "/etc/nginx/sites-enabled/git.conf"
+            name: git-porter
+            readOnly: true
+            subPath: "git.conf"
       volumes:
         - name: git-dir
           emptyDir:
@@ -58,4 +66,9 @@ spec:
         - name: git-data
           emptyDir:
             medium: Memory
+        - name: git-porter
+          configMap:
+            defaultMode: 420
+            name: git-porter
+            optional: false
 {{- end }}
