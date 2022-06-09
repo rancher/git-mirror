@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+set -eu
 
-service fcgiwrap start
-nginx
+tini -s -- fcgiwrap
+tini -s -- nginx
