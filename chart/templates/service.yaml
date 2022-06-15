@@ -14,5 +14,6 @@ spec:
       protocol: TCP
       name: http
   selector:
-      {{- include "git-mirror.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/name: {{ include "git-mirror.name" $ }}
+      app.kubernetes.io/instance: {{ $value.name }}
 {{- end }}
