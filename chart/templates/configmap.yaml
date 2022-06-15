@@ -150,19 +150,4 @@ data:
     }
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2022-05-27T18:21:56Z"
-  managedFields:
-  - apiVersion: v1
-    fieldsType: FieldsV1
-    fieldsV1:
-      f:data:
-        .: {}
-        f:git.conf: {}
-        f:nginx.conf: {}
-    manager: rancher
-    operation: Update
-    time: "2022-05-27T18:21:56Z"
   name: git-porter
-  namespace: git-mirror-testing
-  resourceVersion: "22253792"
-  uid: 791b1c19-43ba-4b1c-98bd-c9e31a690827
