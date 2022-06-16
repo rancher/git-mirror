@@ -43,9 +43,7 @@ spec:
         paths:
           {{- range $key, $value := $.Values.repositories }}
           - path: /{{ $value.name }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: Prefix
-            {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
