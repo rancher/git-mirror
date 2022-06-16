@@ -5,14 +5,16 @@ kind: Deployment
 metadata:
   name: {{ $value.name }}
   labels:
-    {{- include "git-mirror.labels" $ | nindent 4 }}
+    app.kubernetes.io/name: {{ include "git-mirror.name" $ }}
+    app.kubernetes.io/instance: {{ $value.name }}
 spec:
   {{- if not $.Values.autoscaling.enabled }}
   replicas: {{ $.Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "git-mirror.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/name: {{ include "git-mirror.name" $ }}
+      app.kubernetes.io/instance: {{ $value.name }}
   template:
     metadata:
       {{- with $.Values.podAnnotations }}
