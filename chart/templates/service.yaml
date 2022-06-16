@@ -1,4 +1,4 @@
-{{- range $key, $value := .Values.sync.repositories }}
+{{- range $key, $value := .Values.repositories }}
 ---
 apiVersion: v1
 kind: Service
