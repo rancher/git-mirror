@@ -5,7 +5,8 @@ kind: Service
 metadata:
   name: {{ $value.name }}
   labels:
-    {{- include "git-mirror.labels" $ | nindent 4 }}
+    app.kubernetes.io/name: {{ include "git-mirror.name" $ }}
+    app.kubernetes.io/instance: {{ $value.name }}
 spec:
   type: {{ $.Values.porter.service.type }}
   ports:
