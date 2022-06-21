@@ -37,6 +37,10 @@ spec:
           env:
             - name: GIT_SYNC_REPO
               value: {{ $value.url }}
+          {{- if $value.branch }}
+            - name: GIT_SYNC_BRANCH
+              value: {{ $value.branch }}
+          {{- end }}
           securityContext:
             {{- toYaml $.Values.securityContext | nindent 12 }}
           image: "{{ $.Values.sync.image.repository }}:{{ $.Values.sync.image.tag | default $.Chart.AppVersion }}"
