@@ -39,8 +39,10 @@ repositories:
     url: https://github.com/rancher/helm3-charts
   - name: partner-charts
     url: https://github.com/rancher/partner-charts
+    branch: main-source
   - name: rke2-charts
     url: https://github.com/rancher/rke2-charts
+    branch: main-source
 
 sync:
   image:
