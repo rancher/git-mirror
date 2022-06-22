@@ -41,13 +41,15 @@ spec:
             - name: GIT_SYNC_BRANCH
               value: {{ $value.branch }}
           {{- end }}
+            - name: GIT_SYNC_DEST
+              value: "/var/git/{{ $value.name }}"
           securityContext:
             {{- toYaml $.Values.securityContext | nindent 12 }}
           image: "{{ $.Values.sync.image.repository }}:{{ $.Values.sync.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: "{{ $.Values.sync.image.pullPolicy }}"
           volumeMounts:
-          - mountPath: "{{ $.Values.sync.path }}"
-            name: git-data
+          - mountPath: "/var/git"
+            name: git-dir
         - name: git-porter
           image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
@@ -68,9 +70,6 @@ spec:
             subPath: "git.conf"
       volumes:
         - name: git-dir
-          emptyDir:
-            medium: Memory
-        - name: git-data
           emptyDir:
             medium: Memory
         - name: git-porter
