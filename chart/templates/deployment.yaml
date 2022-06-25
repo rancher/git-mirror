@@ -33,23 +33,6 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: git-sync
-          env:
-            - name: GIT_SYNC_REPO
-              value: {{ $value.url }}
-          {{- if $value.branch }}
-            - name: GIT_SYNC_BRANCH
-              value: {{ $value.branch }}
-          {{- end }}
-            - name: GIT_SYNC_DEST
-              value: "/var/git/{{ $value.name }}"
-          securityContext:
-            {{- toYaml $.Values.securityContext | nindent 12 }}
-          image: "{{ $.Values.sync.image.repository }}:{{ $.Values.sync.image.tag | default $.Chart.AppVersion }}"
-          imagePullPolicy: "{{ $.Values.sync.image.pullPolicy }}"
-          volumeMounts:
-          - mountPath: "/var/git"
-            name: git-dir
         - name: git-porter
           image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
@@ -68,6 +51,19 @@ spec:
             name: git-porter
             readOnly: true
             subPath: "git.conf"
+      initContainers:
+        - command:
+          - git
+          - clone
+          - --bare
+          - {{ $value.url }}
+          image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
+          name: git-clone
+          volumeMounts:
+          - mountPath: "/var/git"
+            name: git-dir
+          workingDir: "/var/git"
       volumes:
         - name: git-dir
           emptyDir:
