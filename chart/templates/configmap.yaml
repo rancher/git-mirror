@@ -46,8 +46,8 @@ data:
       location ~ (/.*) {
         client_max_body_size                    0;
 
-        fastcgi_param   SCRIPT_FILENAME         /usr/lib/git-core/git-http-backend;
-        fastcgi_param   DOCUMENT_ROOT           /usr/lib/git-core;
+        fastcgi_param   SCRIPT_FILENAME         /usr/libexec/git-core/git-http-backend;
+        fastcgi_param   DOCUMENT_ROOT           /usr/libexec/git-core;
         include         fastcgi_params;
         fastcgi_param   GIT_HTTP_EXPORT_ALL     "";
         fastcgi_param   GIT_PROJECT_ROOT        /var/git;
