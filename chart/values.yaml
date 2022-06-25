@@ -44,12 +44,6 @@ repositories:
     url: https://github.com/rancher/rke2-charts
     branch: main-source
 
-sync:
-  image:
-    repository: rancher/mirrored-git-sync
-    tag: "v3.5.0"
-    pullPolicy: IfNotPresent
-
 porter:
   url: git.rancher.io
   workerConnections: 4096
