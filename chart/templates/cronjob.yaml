@@ -1,0 +1,32 @@
+{{- range $key, $value := .Values.repositories }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $value.name }}
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - env:
+            - name: GIT_REPOSITORY_NAME
+              value: {{ $value.name }}
+            - name: GIT_REPOSITORY_URL
+              value: {{ $value.url }}
+            {{- if $value.branch }}
+            - name: GIT_DEFAULT_BRANCH
+              value: {{ $value.branch }}
+            {{- end }}
+            name: git-mirror
+  schedule: {{ $.Values.mirror.schedule }}
+  successfulJobsHistoryLimit: 3
+  suspend: false
+{{- end }}
