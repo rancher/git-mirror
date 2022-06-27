@@ -10,6 +10,7 @@ steps:
 - name: docker-dry-run
   image: plugins/docker
   settings:
+    context: porter
     username:
       from_secret: docker_username
     password:
@@ -24,6 +25,7 @@ steps:
 - name: docker-latest
   image: plugins/docker
   settings:
+    context: porter
     username:
       from_secret: docker_username
     password:
@@ -37,6 +39,7 @@ steps:
 - name: docker-release
   image: plugins/docker
   settings:
+    context: porter
     username:
       from_secret: docker_username
     password:
@@ -59,6 +62,7 @@ steps:
 - name: docker-dry-run
   image: plugins/docker
   settings:
+    context: mirror
     username:
       from_secret: docker_username
     password:
@@ -73,6 +77,7 @@ steps:
 - name: docker-latest
   image: plugins/docker
   settings:
+    context: mirror
     username:
       from_secret: docker_username
     password:
@@ -86,6 +91,7 @@ steps:
 - name: docker-release
   image: plugins/docker
   settings:
+    context: mirror
     username:
       from_secret: docker_username
     password:
