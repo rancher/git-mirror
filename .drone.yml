@@ -1,13 +1,13 @@
 ---
 kind: pipeline
-name: docker
+name: git-porter 
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: porter-dry-run
+- name: docker-dry-run
   image: plugins/docker
   settings:
     username:
@@ -21,7 +21,7 @@ steps:
     event:
     - pull_request
 
-- name: porter-latest
+- name: docker-latest
   image: plugins/docker
   settings:
     username:
@@ -34,7 +34,7 @@ steps:
     event:
       - push
 
-- name: porter-release
+- name: docker-release
   image: plugins/docker
   settings:
     username:
@@ -42,6 +42,55 @@ steps:
     password:
       from_secret: docker_password
     repo: rancher/git-porter
+    tag: "${DRONE_TAG}"
+  when:
+    event:
+    - tag
+
+---
+kind: pipeline
+name: git-mirror
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: docker-dry-run
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tag: "latest"
+    dry_run: true
+  when:
+    event:
+    - pull_request
+
+- name: docker-latest
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
+    tags: latest
+  when:
+    event:
+      - push
+
+- name: docker-release
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: rancher/git-mirror
     tag: "${DRONE_TAG}"
   when:
     event:
