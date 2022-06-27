@@ -27,7 +27,15 @@ spec:
             {{- end }}
             image: "{{ $.Values.mirror.image.repository }}:{{ $.Values.mirror.image.tag | default $.Chart.AppVersion }}"
             imagePullPolicy: "{{ $.Values.mirror.image.pullPolicy }}"
+            restartPolicy: Never
             name: git-mirror
+            volumeMounts:
+            - mountPath: "/var/git"
+              name: git-dir
+          volumes:
+            - name: git-dir
+              emptyDir:
+                medium: Memory
   schedule: "{{ $.Values.mirror.schedule }}"
   successfulJobsHistoryLimit: 3
   suspend: false
