@@ -44,6 +44,13 @@ repositories:
     url: https://github.com/rancher/rke2-charts
     branch: main-source
 
+mirror:
+  schedule: '* * * * *'
+  image:
+    repository: rancher/git-mirror
+    tag: latest
+    pullPolicy: Always
+
 porter:
   url: git.rancher.io
   workerConnections: 4096

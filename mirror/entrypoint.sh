@@ -12,7 +12,7 @@ cd "${GIT_REPOSITORY_NAME}"
 
 git remote add local "file:///var/git/${GIT_REPOSITORY_NAME}.git"
 
-git push local "${GIT_DEFAULT_BRANCH}"
+git push local "${GIT_DEFAULT_BRANCH:-master}"
 
 rm -rf "${TMP}"
 
