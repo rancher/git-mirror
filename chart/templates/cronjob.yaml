@@ -27,11 +27,11 @@ spec:
             {{- end }}
             image: "{{ $.Values.mirror.image.repository }}:{{ $.Values.mirror.image.tag | default $.Chart.AppVersion }}"
             imagePullPolicy: "{{ $.Values.mirror.image.pullPolicy }}"
-            restartPolicy: Never
             name: git-mirror
             volumeMounts:
             - mountPath: "/var/git"
               name: git-dir
+          restartPolicy: Never
           volumes:
             - name: git-dir
               emptyDir:
