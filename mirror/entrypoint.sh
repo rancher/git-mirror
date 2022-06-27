@@ -4,6 +4,8 @@ set -eu
 TMP=$(mcookie)
 TMP="/tmp/${TMP}"
 
+mkdir -p "${TMP}"
+
 cd "${TMP}"
 
 git clone "${GIT_REPOSITORY_URL}"
