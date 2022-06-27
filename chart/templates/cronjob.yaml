@@ -22,11 +22,13 @@ spec:
             - name: GIT_REPOSITORY_URL
               value: {{ $value.url }}
             {{- if $value.branch }}
-            - name: GIT_DEFAULT_BRANCH
+            - name: GIT_REPOSITORY_BRANCH
               value: {{ $value.branch }}
             {{- end }}
+            image: "{{ $.Values.mirror.image.repository }}:{{ $.Values.mirror.image.tag | default $.Chart.AppVersion }}"
+            imagePullPolicy: "{{ $.Values.mirror.image.pullPolicy }}"
             name: git-mirror
-  schedule: {{ $.Values.mirror.schedule }}
+  schedule: "{{ $.Values.mirror.schedule }}"
   successfulJobsHistoryLimit: 3
   suspend: false
 {{- end }}
