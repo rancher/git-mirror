@@ -1,7 +1,9 @@
 1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}{{ $.Values.ingress.path }}
+  {{- range $key, $value := $.Values.repositories }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}/{{ $value.name }}
+  {{- end }}
 {{- end }}
 {{- else if contains "NodePort" .Values.porter.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "gitMirror.fullname" . }})
@@ -18,4 +20,4 @@
   kubectl port-forward $POD_NAME 8080:80
 {{- end }}
 
-Source can be found here: https://github.com/rancher/git-mirror-docker
+Source can be found here: https://github.com/rancher/git-mirror
