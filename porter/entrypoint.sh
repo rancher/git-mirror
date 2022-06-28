@@ -1,6 +1,5 @@
 #!/bin/sh
 set -eu
 
-fcgiwrap &
+spawn-fcgi -s /run/fcgi.sock /usr/bin/fcgiwrap && nginx
 
-nginx

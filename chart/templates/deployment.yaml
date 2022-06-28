@@ -47,10 +47,6 @@ spec:
             name: git-porter
             readOnly: true
             subPath: "nginx.conf"
-          - mountPath: "/etc/nginx/sites-enabled/git.conf"
-            name: git-porter
-            readOnly: true
-            subPath: "git.conf"
       initContainers:
         - command:
           - git
