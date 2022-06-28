@@ -8,7 +8,7 @@ mkdir -p "${TMP}"
 
 cd "${TMP}"
 
-git clone "${GIT_REPOSITORY_URL}"
+git clone "${GIT_REPOSITORY_URL}" "${GIT_REPOSITORY_NAME}"
 
 cd "${GIT_REPOSITORY_NAME}"
 
