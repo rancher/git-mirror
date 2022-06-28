@@ -26,7 +26,15 @@ data:
 
         server_name {{ .Values.porter.url }};
 
-        location ~ /git(/.*) {
+        root /var/git;
+
+        # strip the .git
+        rewrite ^(/.*)\.git(/.*)$ $1$2;
+
+        # strip the UUID
+        rewrite "^(/[^/]+)/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(/.*)$" $1$2 last;
+
+        location ~ (/.*) {
           client_max_body_size 0;
           
           include fastcgi_params;
