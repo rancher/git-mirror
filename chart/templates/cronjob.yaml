@@ -34,8 +34,8 @@ spec:
           restartPolicy: Never
           volumes:
             - name: git-dir
-              emptyDir:
-                medium: Memory
+              persistentVolumeClaim:
+                claimName: {{ $value.name }}
   schedule: "{{ $.Values.mirror.schedule }}"
   successfulJobsHistoryLimit: 3
   suspend: false

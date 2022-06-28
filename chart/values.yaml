@@ -83,13 +83,16 @@ tolerations: []
 
 affinity: {}
 
-persistence:
-  enabled: false
-
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
- 
+
+volume:
+  annotations: {}
+  accessMode: ReadWriteOnce
+  size: "256Mi"
+  storageClassName: ""
+

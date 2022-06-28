@@ -66,8 +66,8 @@ spec:
           workingDir: "/var/git"
       volumes:
         - name: git-dir
-          emptyDir:
-            medium: Memory
+          persistentVolumeClaim:
+            claimName: {{ $value.name }}
         - name: git-porter
           configMap:
             defaultMode: 420
