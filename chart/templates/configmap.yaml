@@ -15,16 +15,16 @@ data:
     }
 
     http {
+      log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for '
+                      '"$request" $status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" $request_time $upstream_response_time "$http_x_install_uuid"';
+
+      access_log /dev/stdout main;
+
       server {
         listen  *:80;
 
         server_name {{ .Values.porter.url }};
-
-        log_format main '[$time_local] $http_host $remote_addr $http_x_forwarded_for '
-                        '"$request" $status $body_bytes_sent "$http_referer" '
-                        '"$http_user_agent" $request_time $upstream_response_time "$http_x_install_uuid"';
-
-        access_log /dev/stdout main;
 
         location ~ /git(/.*) {
           client_max_body_size 0;
