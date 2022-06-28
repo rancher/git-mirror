@@ -5,7 +5,7 @@ kind: CronJob
 metadata:
   name: {{ $value.name }}
 spec:
-  concurrencyPolicy: Allow
+  concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   jobTemplate:
     metadata:
@@ -37,6 +37,6 @@ spec:
               persistentVolumeClaim:
                 claimName: {{ $value.name }}
   schedule: "{{ $.Values.mirror.schedule }}"
-  successfulJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
   suspend: false
 {{- end }}
