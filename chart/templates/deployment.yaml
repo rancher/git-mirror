@@ -57,6 +57,7 @@ spec:
           - clone
           - --bare
           - {{ $value.url }}
+          - {{ $value.name }}
           image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
           name: git-clone
