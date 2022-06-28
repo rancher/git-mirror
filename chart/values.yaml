@@ -27,14 +27,17 @@ securityContext: {}
 repositories:
   - name: rancher-catalog
     url: https://github.com/rancher/rancher-catalog
+    branch: v1.6-development
   - name: community-catalog
     url: https://github.com/rancher/community-catalog
   - name: infra-catalog
     url: https://github.com/rancher/infra-catalog
   - name: rancher-charts
     url: https://github.com/rancher/charts
+    branch: dev-v2.6
   - name: system-charts
     url: https://github.com/rancher/system-charts
+    branch: dev-v2.6
   - name: helm3-charts
     url: https://github.com/rancher/helm3-charts
   - name: partner-charts
