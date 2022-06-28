@@ -48,7 +48,19 @@ spec:
             readOnly: true
             subPath: "nginx.conf"
       initContainers:
-        - command:
+        - name: git-scrub
+          command:
+          - rm
+          - -rf
+          - {{ $value.name }}.git
+          image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
+          volumeMounts:
+          - mountPath: "/var/git"
+            name: git-dir
+          workingDir: "/var/git"
+        - name: git-clone
+          command:
           - git
           - clone
           - --bare
@@ -56,7 +68,6 @@ spec:
           - {{ $value.name }}.git
           image: "{{ $.Values.porter.image.repository }}:{{ $.Values.porter.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: "{{ $.Values.porter.image.pullPolicy }}"
-          name: git-clone
           volumeMounts:
           - mountPath: "/var/git"
             name: git-dir
