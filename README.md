@@ -6,18 +6,21 @@ Mirror git repositories.
 
 ```mermaid
 flowchart LR
-  git-sync
-  shared-storage[(efs)]
-  git-porter
   rancher
 
-  git-sync -. write .-> shared-storage
-  git-porter -. read .-> shared-storage
+  git-scrub -. clean .-> persistent-volume
+  git-clone -. write .-> persistent-volume
+  git-porter -. read .-> persistent-volume
+  git-mirror -. write .-> persistent-volume
+
   rancher -. read .-> git-porter
 
-  subgraph git-mirror
-    git-sync
+  subgraph chart
+    git-scrub
+    git-clone
     git-porter
+    git-mirror
+    persistent-volume
   end
 ```
 
