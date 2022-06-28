@@ -54,8 +54,8 @@ data:
         fastcgi_param   PATH_INFO               $1;
 
         # Forward REMOTE_USER as we want to know when we are authenticated
-        fastcgi_param   REMOTE_USER             $remote_user;
-        fastcgi_pass    unix:/var/run/fcgiwrap.socket;
+        #fastcgi_param   REMOTE_USER             $remote_user;
+        #fastcgi_pass    unix:/var/run/fcgiwrap.socket;
       }
     }
   nginx.conf: |-
