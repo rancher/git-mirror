@@ -8,10 +8,10 @@ Mirror git repositories.
 flowchart LR
   rancher
 
-  git-scrub -. clean .-> persistent-volume
-  git-clone -. write .-> persistent-volume
-  git-porter -. read .-> persistent-volume
-  git-mirror -. write .-> persistent-volume
+  git-clone  -. create .-> persistent-volume
+  git-porter -. read   .-> persistent-volume
+  git-scrub  -. delete .-> persistent-volume
+  git-mirror -. update .-> persistent-volume
 
   rancher -. read .-> git-porter
 
@@ -23,4 +23,3 @@ flowchart LR
     persistent-volume
   end
 ```
-
