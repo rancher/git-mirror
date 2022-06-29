@@ -66,8 +66,8 @@ porter:
     port: 80
 
 ingress:
+  annotations: {}
   enabled: true
-  className: nginx
   hosts:
     - host: git.rancher.io
   tls:
