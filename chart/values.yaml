@@ -51,7 +51,7 @@ mirror:
   schedule: '* * * * *'
   image:
     repository: rancher/git-mirror
-    tag: latest
+    tag: v2.0.0
     pullPolicy: Always
 
 porter:
@@ -59,7 +59,7 @@ porter:
   workerConnections: 4096
   image:
     repository: rancher/git-porter
-    tag: latest
+    tag: v2.0.0
     pullPolicy: Always
   service:
     type: ClusterIP
